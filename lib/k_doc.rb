@@ -1,8 +1,10 @@
 # frozen_string_literal: true
 
-require_relative "k_doc/version"
+require 'k_doc/version'
 
 module KDoc
+  # raise KDoc::Error, 'Sample message'
   class Error < StandardError; end
+
   # Your code goes here...
 end
