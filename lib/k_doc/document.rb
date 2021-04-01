@@ -5,6 +5,8 @@ module KDoc
   #
   # Made up of 0 or more setting groups and table groups
   class Document
+    include KDoc::Logging
+
     attr_reader :key
     attr_reader :type
     attr_reader :namespace
@@ -39,12 +41,12 @@ module KDoc
     #   @error = e
     #   raise
     rescue StandardError => e
-      L.error('Standard error in document')
+      log.error('Standard error in document')
       puts "key #{unique_key}"
       # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
-      L.error(e.message)
+      log.error(e.message)
       @error = e
-      # L.exception exception2
+      # log.exception exception2
       raise
     ensure
       @run_actions = nil
@@ -132,24 +134,26 @@ module KDoc
 
       # tp dsls.values, :k_key, :k_type, :state, :save_at, :last_at, :data, :last_data, :source, { :file => { :width => 150 } }
       # puts JSON.pretty_generate(data)
-      L.o(raw_data_struct)
+      log.o(raw_data_struct)
     end
 
+    # rubocop:disable Metrics/AbcSize
     def debug_header
-      L.heading self.class.name
-      L.kv 'key', key
-      L.kv 'type', type
-      L.kv 'namespace', namespace
-      L.kv 'error', error
+      log.heading self.class.name
+      log.kv 'key', key
+      log.kv 'type', type
+      log.kv 'namespace', namespace
+      log.kv 'error', error
 
       debug_header_keys
 
-      L.line
+      log.line
     end
+    # rubocop:enable Metrics/AbcSize
 
     def debug_header_keys
       options&.keys&.reject { |k| k == :namespace }&.each do |key|
-        L.kv key, options[key]
+        log.kv key, options[key]
       end
     end
 
