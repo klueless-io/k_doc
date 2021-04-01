@@ -11,7 +11,7 @@ require 'k_log/log_helper'
 require 'k_log/log_util'
 
 require 'k_doc/version'
-require 'k_doc/data'
+require 'k_doc/logging'
 require 'k_doc/document'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
@@ -37,18 +37,6 @@ module KDoc
 
   KDoc.opinion = KDoc::FakeOpinion.new
   KDoc.util = KDoc::Util.new
-
-  # Need to move this into a KLog factory
-  def self.configure_logger
-    logger = Logger.new($stdout)
-    logger.level = Logger::DEBUG
-    logger.formatter = KLog::LogFormatter.new
-    KLog::LogUtil.new(logger)
-  end
-
-  # KDoc.log = configure_logger
 end
-
-L = KDoc.configure_logger
 
 puts "KDoc::Version: #{KDoc::VERSION}" if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
