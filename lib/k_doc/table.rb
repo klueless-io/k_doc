@@ -37,7 +37,7 @@ module KDoc
 
       # Override with positional arguments
       args.each_with_index do |arg, i|
-        row[fields[i]['name']] = clean_symbol(arg)
+        row[fields[i]['name']] = KUtil.data.clean_symbol(arg)
       end
 
       # Override with named args
@@ -84,9 +84,9 @@ module KDoc
       type_value = (args.length > 1 ? args[1] : type) || :string
 
       {
-        'name' => clean_symbol(name),
-        'default' => clean_symbol(default_value),
-        'type' => clean_symbol(type_value)
+        'name' => KUtil.data.clean_symbol(name),
+        'default' => KUtil.data.clean_symbol(default_value),
+        'type' => KUtil.data.clean_symbol(type_value)
       }
     end
     alias f field
@@ -103,19 +103,13 @@ module KDoc
     end
 
     def respond_to_missing?(name, *_args, &_block)
-      (@parent.present? && @parent.respond_to?(name, true)) || super
+      (!@parent.nil? && @parent.respond_to?(name, true)) || super
     end
 
     def method_missing(name, *args, &block)
       return super unless @parent.respond_to?(name)
 
       @parent.public_send(name, *args, &block)
-    end
-
-    def clean_symbol(value)
-      return value if value.nil?
-
-      value.is_a?(Symbol) ? value.to_s : value
     end
   end
 end
