@@ -193,7 +193,7 @@ RSpec.describe KDoc::Table do
       described_class.new(data)
 
       expect(data).to eq(
-        KDoc::FakeOpinion.new.default_table_key.to_s => {
+        KDoc.opinion.default_table_key.to_s => {
           'fields' => [],
           'rows' => []
         }
