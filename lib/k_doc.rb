@@ -50,3 +50,5 @@ module KDoc
 end
 
 L = KDoc.configure_logger
+
+puts "KDoc::Version: #{KDoc::VERSION}" if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
