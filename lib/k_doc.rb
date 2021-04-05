@@ -11,7 +11,6 @@ require 'k_log/log_helper'
 require 'k_log/log_util'
 
 require 'k_doc/version'
-require 'k_doc/logging'
 require 'k_doc/document'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'

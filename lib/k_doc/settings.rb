@@ -6,7 +6,7 @@ module KDoc
   # Builds up key/value settings from the block
   # and applies them to a key coded node on the hash
   class Settings
-    include Logging
+    include KLog::Logging
 
     attr_reader :parent
     attr_reader :key
