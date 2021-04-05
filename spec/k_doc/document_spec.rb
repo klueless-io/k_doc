@@ -234,7 +234,7 @@ RSpec.describe KDoc::Document do
 
     # RawData: Excludes Meta
     # {"settings"=>{}, "key_values"=>{}, "table"=>{"rows"=>[]}, "custom"=>{"rows"=>[]}}
-    it { is_expected.to eq({ 'settings' => {}, 'key_values' => {}, 'table' => { 'rows' => [] }, 'custom' => { 'rows' => [] } }) }
+    it { is_expected.to eq({ 'settings' => {}, 'key_values' => {}, 'table' => [], 'custom' => [] }) }
   end
 
   describe 'configure settings' do
@@ -556,7 +556,7 @@ RSpec.describe KDoc::Document do
       end
 
       context '#debug' do
-        fit { instance.debug(include_header: true) }
+        it { instance.debug(include_header: true) }
       end
 
       context '.settings' do
