@@ -5,7 +5,12 @@ module KDoc
   #
   # Made up of 0 or more setting groups and table groups
   class Document
-    include KDoc::Logging
+    include KLog::Logging
+
+    # include KType::Error
+    # include KType::ManagedState
+    # include KType::NamedFolder
+    # include KType::LayeredFolder
 
     attr_reader :key
     attr_reader :type
