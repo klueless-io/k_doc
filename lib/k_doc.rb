@@ -39,4 +39,9 @@ module KDoc
   KDoc.util = KDoc::Util.new
 end
 
-puts "KDoc::Version: #{KDoc::VERSION}" if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
+if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
+  namespace = 'KDoc::Version'
+  file_path = $LOADED_FEATURES.find { |f| f.include?('k_doc/version') }
+  version   = KDoc::VERSION.ljust(9)
+  puts "#{namespace.ljust(40)} : #{version.ljust(9)} : #{file_path}"
+end

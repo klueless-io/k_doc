@@ -118,14 +118,17 @@ module KDoc
 
       result.each_key do |key|
         # ANTI: get_node_type uses @data while we are using @data.clone here
-        data[key] = if get_node_type(key) == :table
-                      result[key].delete('fields')
-                    else
-                      result[key]
-                    end
+        result[key] = if get_node_type(key) == :table
+                        # Old format was to keep the rows and delete the fields
+                        # Now the format is to pull the row_value up to the key and remove rows and fields
+                        # result[key].delete('fields')
+                        result[key]['rows']
+                      else
+                        result[key]
+                      end
       end
 
-      data
+      result
     end
 
     # Move this out to the logger function when it has been refactor
