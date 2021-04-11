@@ -38,7 +38,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
   # spec.extensions    = ['ext/k_doc/extconf.rb']
 
+  spec.add_dependency 'activesupport'         , '~> 6'
   spec.add_dependency 'k_log'                 , '~> 0.0.0'
+  spec.add_dependency 'k_type'                , '~> 0.0.0'
   spec.add_dependency 'k_util'                , '~> 0.0.0'
   # spec.add_dependency 'tty-box',         '~> 0.5.0'
 end

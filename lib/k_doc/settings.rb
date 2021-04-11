@@ -7,9 +7,11 @@ module KDoc
   # and applies them to a key coded node on the hash
   class Settings
     include KLog::Logging
+    # include KDoc::Decorators
 
     attr_reader :parent
     attr_reader :key
+    attr_reader :decorators
 
     alias kp parent
 
@@ -19,6 +21,9 @@ module KDoc
       # Need a way to find out the line number for errors and report it correctly
       begin
         instance_eval(&block) if block_given?
+
+        run_decorators
+
         # rubocop:disable Style/RescueStandardError
       rescue => e
         # rubocop:enable Style/RescueStandardError
@@ -28,27 +33,19 @@ module KDoc
       end
     end
 
-    def my_data
+    # Return these settings which are attached to a data container using :key
+    # internal_data is a bad name, but it is unlikely to interfere with any setting names
+    # Maybe I rename this to raw_data
+    def internal_data
       @data[@key]
     end
-
-    # def run_decorators(opts)
-    #   decorators = KDoc::Decorator.decorate.decorators(opts[:decorators])
-
-    #   return if decorators.empty?
-
-    #   decorators.each do |decorator|
-    #     decorator.send(:update, my_data) if decorator.respond_to?(:update)
-    #     decorator.send(:call, my_data) if decorator.respond_to?(:call)
-    #   end
-    # end
 
     def respond_to_missing?(name, *_args, &_block)
       # puts 'respond_to_missing?'
       # puts "respond_to_missing: #{name}"
       n = name.to_s
       n = n[0..-2] if n.end_with?('=')
-      my_data.key?(n.to_s) || (!@parent.nil? && @parent.respond_to?(name, true)) || super
+      internal_data.key?(n.to_s) || (!@parent.nil? && @parent.respond_to?(name, true)) || super
     end
 
     # rubocop:disable Metrics/AbcSize
@@ -106,26 +103,39 @@ module KDoc
         define_method("#{name}=") do |value|
           # log.progress(4, 'add_setter_method')
           # log.kv 'value', value
-          my_data[name.to_s] = value
+          internal_data[name.to_s] = value
         end
       end
     end
 
     def get_value(name)
-      my_data[name.to_s]
+      internal_data[name.to_s]
     end
 
     def debug
-      puts JSON.pretty_generate(my_data)
+      puts JSON.pretty_generate(internal_data)
     end
 
     private
+
+    # This method can move into decorator helpers
+    def run_decorators
+      decorators.each { |decorator| decorator.decorate(self, :settings) }
+    end
 
     def initialize_attributes(data, key = nil, **options)
       @data = data
       @key = (key || FakeOpinion.new.default_settings_key).to_s
 
-      @parent = options[:parent] if !options.nil? && options.key?(:parent)
+      @parent = options[:parent] if options.key?(:parent)
+
+      decorator_list = options[:decorators].nil? ? [] : options[:decorators]
+
+      # This code needs to work differently, it needs to support the 3 different types
+      # Move the query into helpers
+      @decorators = decorator_list
+                    .map(&:new)
+                    .select { |decorator| decorator.compatible?(self) }
 
       @data[@key] = {}
     end

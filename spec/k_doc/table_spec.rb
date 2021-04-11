@@ -174,7 +174,7 @@ RSpec.describe KDoc::Table do
   describe '#get_fields' do
     subject do
       described_class.new(data, :rows) do
-        fields %i[name type]
+        fields :name, :type
       end
     end
 
@@ -202,7 +202,7 @@ RSpec.describe KDoc::Table do
 
     it 'simple fields' do
       described_class.new(data, :items) do
-        fields %i[column1 column2]
+        fields :column1, :column2
       end
 
       expect(data).to eq(
@@ -218,7 +218,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom default value for column2' do
       described_class.new(data, :rows) do
-        fields [:column1, field(:column2, 'CUSTOM DEFAULT')]
+        fields :column1, field(:column2, 'CUSTOM DEFAULT')
       end
 
       expect(data).to eq(
@@ -234,7 +234,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom default boolean FALSE' do
       described_class.new(data, :rows) do
-        fields [field(:column1, false), field(:column2, default: false)]
+        fields field(:column1, false), field(:column2, default: false)
       end
 
       expect(data).to eq(
@@ -250,7 +250,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom default boolean TRUE' do
       described_class.new(data, :rows) do
-        fields [field(:column1, true), field(:column2, default: true)]
+        fields field(:column1, true), field(:column2, default: true)
       end
 
       expect(data).to eq(
@@ -266,7 +266,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom type & default value in column2' do
       described_class.new(data, :rows) do
-        fields [:column1, field(:column2, 333, :integer)]
+        fields :column1, field(:column2, 333, :integer)
       end
 
       expect(data).to eq(
@@ -282,7 +282,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom type & default value in column2 using the (f) alias' do
       described_class.new(data, :rows) do
-        fields [:column1, f(:column2, 3.33, type: :float)]
+        fields :column1, f(:column2, 3.33, type: :float)
       end
 
       expect(data).to eq(
@@ -298,7 +298,7 @@ RSpec.describe KDoc::Table do
 
     it 'fields with custom type & default value in column2 using named parameters' do
       described_class.new(data, :rows) do
-        fields [:column1, f(:column2, default: 'CUSTOM VALUE', type: 'customtype')]
+        fields :column1, f(:column2, default: 'CUSTOM VALUE', type: 'customtype')
       end
 
       expect(data).to eq(
@@ -314,7 +314,7 @@ RSpec.describe KDoc::Table do
 
     it 'mixed fields' do
       described_class.new(data, :rows) do
-        fields [:name, f(:type, 'String'), f(:title, ''), f(:default, nil), f(:required, true, :bool), :reference_type, :db_type, :format_type, :description]
+        fields :name, f(:type, 'String'), f(:title, ''), f(:default, nil), f(:required, true, :bool), :reference_type, :db_type, :format_type, :description
       end
 
       expect(data).to eq(
@@ -368,7 +368,7 @@ RSpec.describe KDoc::Table do
     context 'using positional arguments' do
       it 'with 2 rows, 2 columns and nil data' do
         described_class.new(data) do
-          fields %i[column1 column2]
+          fields :column1, :column2
 
           row
           row
@@ -390,7 +390,7 @@ RSpec.describe KDoc::Table do
 
       it 'with 2 rows, 2 columns and data' do
         described_class.new(data) do
-          fields %i[column1 column2]
+          fields :column1, :column2
 
           row   'row1-c1', 'row1-c2'
           row   'row2-c1', 'row2-c2'
@@ -412,7 +412,7 @@ RSpec.describe KDoc::Table do
 
       it 'with 2 rows, 2 columns using mixed nil mixed data' do
         described_class.new(data) do
-          fields %i[column1 column2]
+          fields :column1, :column2
 
           row   nil, 'row1-c2'
           row   'row2-c1'
@@ -434,7 +434,7 @@ RSpec.describe KDoc::Table do
 
       it 'with 2 rows, 3 columns using mixed default types' do
         described_class.new(data) do
-          fields [:column1, :column2, f(:column3, false)]
+          fields :column1, :column2, f(:column3, false)
 
           row   nil, 'row1-c2', true
           row   'row2-c1'
@@ -454,13 +454,22 @@ RSpec.describe KDoc::Table do
           }
         )
       end
+
+      it 'when row.columns > fields.columns' do
+        expect do
+          described_class.new(data) do
+            fields :column1
+            row 'row1-c1', 'row1-c2'
+          end
+        end.to raise_error(KType::Error, 'To many values for row, argument 2')
+      end
     end
   end
 
   context 'using named arguments' do
     it 'with 2 rows, 2 columns using named values' do
       described_class.new(data) do
-        fields %i[column1 column2]
+        fields :column1, :column2
 
         row column1: 'david'
         row column2: 'cruwys'
@@ -486,7 +495,7 @@ RSpec.describe KDoc::Table do
   context 'using positional and named arguments' do
     it 'add 2 rows, 2 columns with named values' do
       described_class.new(data) do
-        fields %i[column1 column2]
+        fields :column1, :column2
 
         row 'david'
         row column2: 'cruwys'
@@ -510,7 +519,7 @@ RSpec.describe KDoc::Table do
   describe 'get rows' do
     subject do
       described_class.new(data) do
-        fields %i[column1 column2]
+        fields :column1, :column2
 
         row 1
         row 2

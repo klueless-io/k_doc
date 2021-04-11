@@ -34,7 +34,7 @@ require 'spec_helper'
 #   end
 # end
 
-RSpec.describe KDoc::Document do
+RSpec.describe KDoc::Data do
   subject { instance }
 
   let(:instance) { described_class.new(key, &block) }
@@ -428,7 +428,7 @@ RSpec.describe KDoc::Document do
         let(:block) do
           lambda do |_|
             table do
-              fields [:column1, :column2, f(:column3, false), f(:column4, default: 'CUSTOM VALUE')]
+              fields :column1, :column2, f(:column3, false), f(:column4, default: 'CUSTOM VALUE')
 
               row 'row1-c1', 'row1-c2', true, 'row1-c4'
               row
@@ -540,7 +540,7 @@ RSpec.describe KDoc::Document do
           end
 
           table do
-            fields [:column1, f(:column2, 99, :integer), f(:column3, false, :boolean), f(:column4, default: 'CUSTOM VALUE'), f(:column5, '')]
+            fields :column1, f(:column2, 99, :integer), f(:column3, false, :boolean), f(:column4, default: 'CUSTOM VALUE'), f(:column5, '')
 
             row 'row1-c1', 66, true, 'row1-c4'
             row
@@ -629,7 +629,7 @@ RSpec.describe KDoc::Document do
   #     subject {
   #       Klue.process_code(
   #         <<-RUBY
-  #     Klue::Dsl::DocumentDsl.new 'parent' do
+  #     Klue::Dsl::DataDsl.new 'parent' do
   #       settings do
   #         first_name      'David'
   #         last_name       'Cruwys'
@@ -657,14 +657,14 @@ RSpec.describe KDoc::Document do
   #     subject {
   #       Klue.process_code(
   #         <<-RUBY
-  #     Klue::Dsl::DocumentDsl.new 'parent' do
+  #     Klue::Dsl::DataDsl.new 'parent' do
   #       settings do
   #         first_name      'David'
   #         last_name       'Cruwys'
   #       end
   #     end
 
-  #     Klue::Dsl::DocumentDsl.new 'child' do
+  #     Klue::Dsl::DataDsl.new 'child' do
   #       settings do
   #         age      'Old'
   #         sex      'Male'
@@ -704,14 +704,14 @@ RSpec.describe KDoc::Document do
   #     subject { Klue.process_code(
   #     <<-RUBY
 
-  #       Klue::Dsl::DocumentDsl.new 'parent' do
+  #       Klue::Dsl::DataDsl.new 'parent' do
   #         settings do
   #           first_name      'David'
   #           last_name       'Cruwys'
   #         end
   #       end
 
-  #       Klue::Dsl::DocumentDsl.new 'child' do
+  #       Klue::Dsl::DataDsl.new 'child' do
 
   #         p = import('parent')
 
