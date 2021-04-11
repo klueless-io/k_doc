@@ -2,6 +2,7 @@
 
 require 'spec_helper'
 
+# Move to KUtil
 RSpec.describe KDoc::Util do
   let(:instance) { described_class.new }
 

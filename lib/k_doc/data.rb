@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module KDoc
-  # General purpose document DSL
+  # General purpose data DSL
   #
   # Made up of 0 or more setting groups and table groups
-  class Document
+  class Data
     include KLog::Logging
 
     # include KType::Error
@@ -64,7 +64,7 @@ module KDoc
     def settings(key = nil, **options, &block)
       options ||= {}
 
-      opts = {}.merge(@options) # Document Options
+      opts = {}.merge(@options) # Data Options
                .merge(options)  # Settings Options
                .merge(parent: self)
 
@@ -116,6 +116,7 @@ module KDoc
     end
 
     # Removes any meta data eg. "fields" from a table and just returns the raw data
+    # REFACTOR: IT MAY BE BEST TO MOVE raw_data into each of the node_types
     def raw_data
       # REFACT, what if this is CSV, meaning it is just an array?
       #         add specs

@@ -1,7 +1,7 @@
-KDoc.doc :sample_data do
+KDoc.data :sample_data do
 
   table :users do
-    fields [:user_name, :user, :email]
+    fields :user_name, :user, :email
 
     row :bad_ass  , 'Ken Va'    , 'ken@foliage.com.au'
     row :louise   , 'Louise'    , 'louise@gmail.com'
@@ -9,14 +9,14 @@ KDoc.doc :sample_data do
   end
 
   table :roles do
-    fields [:name]
+    fields :name
 
     row :owner
     row :staff
   end
 
   table :accounts do
-    fields [:type, :name]
+    fields :type, :name
 
     row :cafe_owner, 'The Foliage Cafe'
     row :cafe_owner, 'The North Spoon'
@@ -25,7 +25,7 @@ KDoc.doc :sample_data do
     
   # __ = Lookup fields
   table :account_user_roles do
-    fields [:account__name, :user__user_name, :role__name]
+    fields :account__name, :user__user_name, :role__name
 
     row 'The Foliage Cafe'  , :bad_ass    , :owner
     row 'The Foliage Cafe'  , :louise     , :staff
@@ -34,7 +34,7 @@ KDoc.doc :sample_data do
   end
 
   table :groups, adk: :co_ops do 
-    fields [:name]
+    fields :name
 
     row :vietnamese
     row :thai
@@ -42,14 +42,14 @@ KDoc.doc :sample_data do
   end
 
   table :professional_service_types do 
-    fields [:name]
+    fields :name
 
     row :roasting
     row :mechanic
   end
 
   table :vendor_types do 
-    fields [:name, :examples]
+    fields :name, :examples
 
     row :milk
     row :tea
@@ -66,13 +66,13 @@ KDoc.doc :sample_data do
   end
 
   table :registries do 
-    fields [:name]
+    fields :name
 
     row :cafes
     row :coffee_providers
   end
 
   table :credit_application do 
-    fields [:tax_id, :delivery_address, :billing_address, :date_opened, :own_lease, :landlord_details, :bank_details]
+    fields :tax_id, :delivery_address, :billing_address, :date_opened, :own_lease, :landlord_details, :bank_details
   end
 end
