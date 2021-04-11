@@ -10,7 +10,7 @@ module KDoc
     attr_accessor :default_settings_key
     attr_accessor :default_table_key
 
-    attr_accessor :document_class
+    # attr_accessor :document_class
     attr_accessor :settings_class
     attr_accessor :table_class
 
@@ -19,7 +19,7 @@ module KDoc
       @default_settings_key = :settings
       @default_table_key = :table
 
-      @document_class = KDoc::Document
+      # @document_class = KDoc::Document
       @table_class = KDoc::Table
       @settings_class = KDoc::Settings
     end

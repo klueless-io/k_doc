@@ -10,21 +10,26 @@ As a Developer, I need flexible data structures defined in DSL, so can model ric
 
 As a Developer, I need flexible data structures defined in DSL, so can model rich documents
 
-### Tasks next on list
+## Stories and tasks
+
+### Stories - completed
+
+As a Domain Modeler, I can define flexible tabular structures, so I can access dynamic tabular arrays
+
+- add DSL for table with columns and rows
+- add support for data decorators
+
+As a Domain Modeler, I can define flexible key/value stores, so I can access settings data
+
+- add DSL for key/value settings
+- add support for data decorators
+
+### Tasks - completed
 
 Setup RubyGems and RubyDoc
 
 - Build and deploy gem to [rubygems.org](https://rubygems.org/gems/k_doc)
 - Attach documentation to [rubydoc.info](https://rubydoc.info/github/to-do-/k_doc/master)
-
-Setup GitHub Action (test and lint)
-
-- Setup Rspec action
-- Setup RuboCop action
-
-## Stories and tasks
-
-### Tasks - completed
 
 Setup project management, requirement and SCRUM documents
 
@@ -32,6 +37,11 @@ Setup project management, requirement and SCRUM documents
 - Setup user stories and tasks
 - Setup a project backlog
 - Setup an examples/usage document
+
+Setup GitHub Action (test and lint)
+
+- Setup Rspec action
+- Setup RuboCop action
 
 Setup new Ruby GEM
 

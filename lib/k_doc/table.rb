@@ -3,16 +3,33 @@
 module KDoc
   # Build rows (aka DataTable) with field definitions and rows of data
   class Table
+    include KLog::Logging
+
     attr_reader :parent
     attr_reader :name
+    attr_reader :decorators
 
     def initialize(data, name = nil, **options, &block)
       initialize_attributes(data, name, **options)
 
+      @has_executed_field_decorators = false
+      @has_executed_row_decorators = false
+
       instance_eval(&block) if block_given?
+
+      run_decorators(:update_rows)
     end
 
-    def fields(field_definitions)
+    # Pass fields in using the following format
+    #   fields :name, f(:type, :string), :db_type
+    #
+    # The older format of an array is supported via a splat conversion
+    def fields(*field_definitions)
+      if field_definitions.length == 1 && field_definitions[0].is_a?(Array)
+        log.warn('avoid supplying field definitions with array. *Splat fields is the preferred technique.')
+        field_definitions = *field_definitions[0]
+      end
+
       fields = @data[@name]['fields']
 
       field_definitions.each do |fd|
@@ -22,15 +39,18 @@ module KDoc
                     fd
                   end
       end
+
+      run_decorators(:update_fields)
     end
 
     # rubocop:disable Metrics/AbcSize
     def row(*args, **named_args)
       fields = @data[@name]['fields']
 
-      raise "To many values for row, argument #{i}" if args.length > fields.length
+      raise KType::Error, "To many values for row, argument #{args.length}" if args.length > fields.length
 
       # Apply column names with defaults
+
       row = fields.each_with_object({}) do |f, hash|
         hash[f['name']] = f['default']
       end
@@ -59,6 +79,10 @@ module KDoc
       @data[@name]['rows']
     end
     # rubocop:enable Naming/AccessorMethodName
+
+    def internal_data
+      @data[@name]
+    end
 
     def find_row(key, value)
       @data[@name]['rows'].find { |r| r[key] == value }
@@ -91,13 +115,38 @@ module KDoc
     end
     alias f field
 
+    def debug
+      log.o(KUtil.data.to_open_struct(internal_data))
+    end
+
     private
+
+    # This method can move into decorator helpers
+    # Run decorators a maximum of once for each behavior
+    def run_decorators(behavior)
+      return if behavior == :update_fields && @has_executed_field_decorators
+      return if behavior == :update_rows && @has_executed_row_decorators
+
+      @has_executed_field_decorators = true if behavior == :update_fields
+
+      @has_executed_rows_decorators = true if behavior == :update_rows
+
+      decorators.each { |decorator| decorator.decorate(self, behavior) }
+    end
 
     def initialize_attributes(data, name = nil, **options)
       @data = data
       @name = (name || FakeOpinion.new.default_table_key.to_s).to_s
 
       @parent = options[:parent] if !options.nil? && options.key?(:parent)
+
+      # This code needs to work differently, it needs to support the 3 different types
+      # Move the query into helpers
+      decorator_list = options[:decorators].nil? ? [] : options[:decorators]
+
+      @decorators = decorator_list
+                    .map(&:new)
+                    .select { |decorator| decorator.compatible?(self) }
 
       @data[@name] = { 'fields' => [], 'rows' => [] }
     end
