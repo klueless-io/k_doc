@@ -122,18 +122,21 @@ module KDoc
     private
 
     # This method can move into decorator helpers
-    # Run decorators a maximum of once for each behavior
-    def run_decorators(behavior)
-      return if behavior == :update_fields && @has_executed_field_decorators
-      return if behavior == :update_rows && @has_executed_row_decorators
+    # Run decorators a maximum of once for each behaviour
+    # rubocop:disable Metrics/CyclomaticComplexity
+    def run_decorators(behaviour)
+      return if behaviour == :update_fields && @has_executed_field_decorators
+      return if behaviour == :update_rows && @has_executed_row_decorators
 
-      @has_executed_field_decorators = true if behavior == :update_fields
+      @has_executed_field_decorators = true if behaviour == :update_fields
 
-      @has_executed_rows_decorators = true if behavior == :update_rows
+      @has_executed_rows_decorators = true if behaviour == :update_rows
 
-      decorators.each { |decorator| decorator.decorate(self, behavior) }
+      decorators.each { |decorator| decorator.decorate(self, behaviour) }
     end
+    # rubocop:enable Metrics/CyclomaticComplexity
 
+    # rubocop:disable Metrics/AbcSize
     def initialize_attributes(data, name = nil, **options)
       @data = data
       @name = (name || FakeOpinion.new.default_table_key.to_s).to_s
@@ -150,6 +153,7 @@ module KDoc
 
       @data[@name] = { 'fields' => [], 'rows' => [] }
     end
+    # rubocop:enable Metrics/AbcSize
 
     def respond_to_missing?(name, *_args, &_block)
       (!@parent.nil? && @parent.respond_to?(name, true)) || super
