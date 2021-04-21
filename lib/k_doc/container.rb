@@ -17,15 +17,21 @@ module KDoc
     # Any container can be uniquely identified via it's
     # key, type, namespace and project_key attributes
     #
-    # @param [String|Symbol] name Name of the container
-    # @param [String|Symbol] type Type of the container, defaults to KDoc:: FakeOpinion.new.default_document_type if not set
-    # @param [String|Symbol] namespace Namespace that the container belongs to
-    # @param [String|Symbol] project_key Project that the container belongs to
-    def initialize(key: nil, type: nil, namespace: nil, project_key: nil)
-      @key = key || SecureRandom.alphanumeric(8)
-      @type = type || KDoc.opinion.default_document_type
-      @namespace = namespace || ''
-      @project_key = project_key || ''
+    # @param [Hash] **opts The options
+    # @option opts [String|Symbol] name Name of the container
+    # @option opts [String|Symbol] type Type of the container, defaults to KDoc:: FakeOpinion.new.default_document_type if not set
+    # @option opts [String|Symbol] namespace Namespace that the container belongs to
+    # @option opts [String|Symbol] project_key Project that the container belongs to
+    def initialize(**opts)
+      @key = opts[:key] || SecureRandom.alphanumeric(8)
+      @type = opts[:type] || KDoc.opinion.default_document_type
+      @namespace = opts[:namespace] || ''
+      @project_key = opts[:project_key] || ''
+
+      # Old name is default_data, wonder if I still need that idea?
+      # Most documents live within a hash, some tabular documents such as CSV will use an []
+      # @data       = slice_option(:default_data) || {}
+      @data = opts[:data] || {}
     end
 
     def unique_key
@@ -38,6 +44,12 @@ module KDoc
       log.kv 'namespace', namespace
       log.kv 'project_key', namespace
       log.kv 'error', error
+    end
+
+    attr_writer :data
+
+    def data
+      @data.clone
     end
   end
 end
