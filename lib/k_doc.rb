@@ -6,15 +6,16 @@ require 'table_print'
 require 'k_log'
 require 'k_type'
 require 'k_util'
+require 'k_decor'
 
 require 'k_doc/version'
+require 'k_doc/container'
 require 'k_doc/data'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
 require 'k_doc/table'
 require 'k_doc/util'
 
-require 'k_doc/decorators/base_decorator'
 require 'k_doc/decorators/settings_decorator'
 require 'k_doc/decorators/table_decorator'
 

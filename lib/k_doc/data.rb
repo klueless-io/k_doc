@@ -4,7 +4,7 @@ module KDoc
   # General purpose data DSL
   #
   # Made up of 0 or more setting groups and table groups
-  class Data
+  class Data < KDoc::Container
     include KLog::Logging
 
     # include KType::Error
@@ -12,19 +12,16 @@ module KDoc
     # include KType::NamedFolder
     # include KType::LayeredFolder
 
-    attr_reader :key
-    attr_reader :type
-    attr_reader :namespace
     attr_reader :options
-    attr_reader :error
 
     # Create document
     #
     # @param [String|Symbol] name Name of the document
     # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_document_type if not set
     # @param default: Default value (using named params), as above
-    def initialize(key = SecureRandom.alphanumeric(8), **options, &block)
-      initialize_attributes(key, **options)
+    def initialize(key = nil, **options, &block)
+      super(key: key, type: options[:type], namespace: options[:namespace], project_key: options[:project_key])
+      initialize_attributes(**options)
 
       @block = block if block_given?
     end
@@ -168,18 +165,12 @@ module KDoc
 
     private
 
-    def initialize_attributes(key = nil, **options)
-      @key = key
-
+    def initialize_attributes(**options)
       @options    = options || {}
-      @type       = slice_option(:type) || KDoc.opinion.default_document_type
-      @namespace  = slice_option(:namespace) || ''
       @parent     = slice_option(:parent)
 
       # Most documents live within a hash, some tabular documents such as CSV will use an []
       @data       = slice_option(:default_data) || {}
-
-      @error = nil
     end
 
     def settings_instance(data, key, **options, &block)

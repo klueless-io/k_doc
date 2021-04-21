@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
-# This could move into KDecor
 module KDoc
   module Decorators
-    class TableDecorator < BaseDecorator
-      def initialize()
+    class TableDecorator < KDecor::BaseDecorator
+      def initialize
         super(KDoc::Table)
 
-        self.available_behaviors = [:update_fields, :update_rows]
-        self.implemented_behaviors = []
+        self.implemented_behaviours = %i[update_fields update_rows]
       end
 
-      def update(target, behavior)
-        update_fields(target, target.get_fields)  if behavior == :all || behavior == :update_fields
-        update_rows(target, target.get_rows)      if behavior == :all || behavior == :update_rows
+      def update(target, **opts)
+        behaviour = opts[:behaviour]
+
+        update_fields(target, target.get_fields)  if %i[all update_fields].include?(behaviour)
+        update_rows(target, target.get_rows)      if %i[all update_rows].include?(behaviour)
 
         target
       end
