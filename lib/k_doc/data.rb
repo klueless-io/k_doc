@@ -82,14 +82,6 @@ module KDoc
     #   KDoc::Builder::Shotstack.new(@data, key, &block)
     # end
 
-    # def set_data(data)
-    #   @data = data
-    # end
-
-    def data
-      @data.clone
-    end
-
     def data_struct
       KUtil.data.to_open_struct(data)
     end

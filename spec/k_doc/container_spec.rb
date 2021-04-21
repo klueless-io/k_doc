@@ -84,4 +84,37 @@ RSpec.describe KDoc::Container do
       it { expect(subject).to eq('controllers_some_name_controller') }
     end
   end
+
+  describe '.data' do
+    subject { instance.data }
+
+    context 'with default initializer' do
+      it { is_expected.to eq({}) }
+    end
+
+    context 'with custom data' do
+      let(:instance) { described_class.new(key: key, data: data) }
+      let(:data) { { thunderbirds: :are_go } }
+
+      it { is_expected.to eq({ thunderbirds: :are_go }) }
+
+      context 'of type array' do
+        let(:data) { %i[thunderbirds are_go] }
+
+        it { is_expected.to eq(%i[thunderbirds are_go]) }
+      end
+
+      describe '#data=' do
+        let(:data) { { go: :ricky } }
+        before { instance.data = (data) }
+
+        describe '.data' do
+          subject { instance.data }
+
+          it { is_expected.to eq(data) }
+          it { is_expected.not_to equal(data) }
+        end
+      end
+    end
+  end
 end
