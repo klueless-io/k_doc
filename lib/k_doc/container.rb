@@ -23,7 +23,7 @@ module KDoc
     # @option opts [String|Symbol] namespace Namespace that the container belongs to
     # @option opts [String|Symbol] project_key Project that the container belongs to
     def initialize(**opts)
-      @key = opts[:key] || SecureRandom.alphanumeric(8)
+      @key = opts[:key] || SecureRandom.alphanumeric(4)
       @type = opts[:type] || KDoc.opinion.default_document_type
       @namespace = opts[:namespace] || ''
       @project_key = opts[:project_key] || ''
