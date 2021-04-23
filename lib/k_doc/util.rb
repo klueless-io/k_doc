@@ -12,9 +12,9 @@ module KDoc
 
       type ||= KDoc.opinion.default_document_type
 
-      keys = [project_key, namespace, key, type].reject { |k| k.nil? || k == '' }
+      keys = [project_key, namespace, key, type].reject { |k| k.nil? || k == '' }.map { |k| k.to_s.gsub('_', '-') }
 
-      keys.join('_')
+      keys.join('-')
     end
   end
 end

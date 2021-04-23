@@ -69,19 +69,19 @@ RSpec.describe KDoc::Container do
     context 'with key' do
       subject { described_class.new(key: key).unique_key }
 
-      it { expect(subject).to eq("some_name_#{KDoc.opinion.default_document_type}") }
+      it { expect(subject).to eq("some-name-#{KDoc.opinion.default_document_type}") }
     end
 
     context 'with key and type' do
       subject { described_class.new(key: key, type: type).unique_key }
 
-      it { expect(subject).to eq('some_name_controller') }
+      it { expect(subject).to eq('some-name-controller') }
     end
 
     context 'with key, type and namespace' do
       subject { described_class.new(key: key, type: type, namespace: namespace).unique_key }
 
-      it { expect(subject).to eq('controllers_some_name_controller') }
+      it { expect(subject).to eq('controllers-some-name-controller') }
     end
   end
 
