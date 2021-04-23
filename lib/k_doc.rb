@@ -10,7 +10,8 @@ require 'k_decor'
 
 require 'k_doc/version'
 require 'k_doc/container'
-require 'k_doc/data'
+# require 'k_doc/data'
+require 'k_doc/model'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
 require 'k_doc/table'
@@ -24,11 +25,11 @@ module KDoc
   class Error < StandardError; end
 
   class << self
-    # Factory method to create a new data
-    def data(key = nil, **options, &block)
-      data = KDoc::Data.new(key, **options, &block)
-      data.execute_block
-      data
+    # Factory method to create a new model
+    def model(key = nil, **options, &block)
+      model = KDoc::Model.new(key, **options, &block)
+      model.execute_block
+      model
     end
 
     attr_accessor :opinion
