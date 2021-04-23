@@ -21,29 +21,29 @@ RSpec.describe KDoc::Util do
     context 'with key' do
       let(:key) { 'some_name' }
 
-      it { is_expected.to eq('some_name_entity') }
+      it { is_expected.to eq('some-name-entity') }
 
       context 'containing a space' do
         let(:key) { 'some name' }
 
-        it { expect(subject).to eq("some name_#{def_type}") }
+        it { is_expected.to eq("some name-#{def_type}") }
       end
 
       context 'with project' do
         let(:project) { :project1 }
 
-        it { expect(subject).to eq("project1_some_name_#{def_type}") }
+        it { expect(subject).to eq("project1-some-name-#{def_type}") }
       end
 
       context 'with namespace' do
         let(:namespace) { :spaceman }
 
-        it { expect(subject).to eq("spaceman_some_name_#{def_type}") }
+        it { expect(subject).to eq("spaceman-some-name-#{def_type}") }
 
         context 'with project' do
           let(:project) { :project1 }
 
-          it { expect(subject).to eq("project1_spaceman_some_name_#{def_type}") }
+          it { expect(subject).to eq("project1-spaceman-some-name-#{def_type}") }
         end
       end
 
@@ -53,18 +53,18 @@ RSpec.describe KDoc::Util do
         context 'nil' do
           let(:type) { nil }
 
-          it { expect(subject).to eq("some_name_#{def_type}") }
+          it { expect(subject).to eq("some-name-#{def_type}") }
         end
 
         context 'controller' do
           let(:type) { :controller }
 
-          it { expect(subject).to eq('some_name_controller') }
+          it { expect(subject).to eq('some-name-controller') }
 
           context 'and with namespace' do
             let(:namespace) { :spaceman }
 
-            it { expect(subject).to eq('spaceman_some_name_controller') }
+            it { expect(subject).to eq('spaceman-some-name-controller') }
           end
         end
       end
