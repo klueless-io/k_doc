@@ -3,9 +3,14 @@
 module KDoc
   # A container acts a base data object for any data requires tagging such as
   # unique key, type and namespace.
+  # Rename from Cotainer to Data
   class Container
     # include KLog::Logging
 
+    # Seems like there is way too much data here
+    # Firstly it should probably be in an interface
+    # Secondly some of this (namespace, project_key, error) belongs in k_manager
+    # So container would be better off just being key, type, data
     attr_reader :key
     attr_reader :type
     attr_reader :namespace

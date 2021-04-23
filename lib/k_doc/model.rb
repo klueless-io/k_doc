@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 module KDoc
-  # General purpose data DSL
+  # Model is a DSL for modeling general purpose data objects
   #
-  # Made up of 0 or more setting groups and table groups
-  class Data < KDoc::Container
+  # A mode can have
+  #  - 0 or more named setting groups each with their key/value pairs
+  #  - 0 or more named table groups each with their own columns and rows
+  #
+  # A settings group without a name will default to name: :settings
+  # A table group without a name will default to name: :table
+  class Model < KDoc::Container
     include KLog::Logging
 
     # include KType::Error
@@ -26,6 +31,7 @@ module KDoc
       @block = block if block_given?
     end
 
+    # NOTE: Can this be moved out of the is object?
     def execute_block(run_actions: nil)
       return if @block.nil?
 
