@@ -18,7 +18,7 @@ RSpec.describe KDoc::Container do
 
       it do
         is_expected.to have_attributes(
-          key: match(/^[A-Za-z0-9]{8}$/),
+          key: match(/^[A-Za-z0-9]{4}$/),
           type: KDoc.opinion.default_document_type,
           namespace: '',
           project_key: ''
