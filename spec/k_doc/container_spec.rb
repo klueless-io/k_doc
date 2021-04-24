@@ -19,7 +19,7 @@ RSpec.describe KDoc::Container do
       it do
         is_expected.to have_attributes(
           key: match(/^[A-Za-z0-9]{4}$/),
-          type: '' # KDoc.opinion.default_document_type,
+          type: be_empty
           # namespace: '',
           # project_key: ''
         )
@@ -44,7 +44,7 @@ RSpec.describe KDoc::Container do
           context 'nil' do
             let(:type) { nil }
 
-            it { is_expected.to eq('') } # eq(KDoc.opinion.default_document_type) }
+            it { is_expected.to eq('') } # eq(KDoc.opinion.default_model_type) }
           end
 
           context ':some_data_type' do
@@ -69,7 +69,7 @@ RSpec.describe KDoc::Container do
   #   context 'with key' do
   #     subject { described_class.new(key: key).unique_key }
 
-  #     it { expect(subject).to eq("some-name-#{KDoc.opinion.default_document_type}") }
+  #     it { expect(subject).to eq("some-name-#{KDoc.opinion.default_model_type}") }
   #   end
 
   #   context 'with key and type' do

@@ -10,7 +10,7 @@ module KDoc
     def build_unique_key(key, type = nil, namespace = nil, project_key = nil)
       raise KDoc::Error, 'key is required when generating unique key' if key.nil? || key.empty?
 
-      type ||= KDoc.opinion.default_document_type
+      type ||= KDoc.opinion.default_model_type
 
       keys = [project_key, namespace, key, type].reject { |k| k.nil? || k == '' }.map { |k| k.to_s.gsub('_', '-') }
 

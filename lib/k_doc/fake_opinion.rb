@@ -6,7 +6,7 @@ module KDoc
   # This is called fake opinion because I have not figured out
   # how I want to implement this
   class FakeOpinion
-    attr_accessor :default_document_type
+    attr_accessor :default_model_type
     attr_accessor :default_settings_key
     attr_accessor :default_table_key
 
@@ -15,7 +15,7 @@ module KDoc
     attr_accessor :table_class
 
     def initialize
-      @default_document_type = :entity
+      @default_model_type = :entity
       @default_settings_key = :settings
       @default_table_key = :table
 

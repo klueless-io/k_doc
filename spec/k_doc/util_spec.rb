@@ -12,7 +12,7 @@ RSpec.describe KDoc::Util do
     let(:key) { nil }
     let(:namespace) { nil }
     let(:project) { nil }
-    let(:def_type) { KDoc.opinion.default_document_type }
+    let(:def_type) { KDoc.opinion.default_model_type }
 
     context 'with nil key' do
       it { expect { subject }.to raise_error KDoc::Error }
