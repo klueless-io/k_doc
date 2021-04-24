@@ -38,8 +38,13 @@ RSpec.describe KDoc::Model do
   subject { instance }
 
   let(:instance) { described_class.new('some_name', &block) }
-
   let(:block) { nil }
+
+  context '.type' do
+    subject { instance.type }
+
+    it { is_expected.to eq(KDoc.opinion.default_model_type) }
+  end
 
   describe '#get_node_type' do
     # subject { instance.data}
