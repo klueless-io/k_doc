@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 module KDoc
-  # A container acts a base data object for any data requires tagging such as
+  # A data acts a base data object for any data requires tagging such as
   # unique key, type and namespace.
-  # Rename from Cotainer to Data
   class Container
     # include KLog::Logging
 
@@ -12,9 +11,13 @@ module KDoc
     # Secondly some of this (namespace, project_key, error) belongs in k_manager
     # So container would be better off just being key, type, data
     attr_reader :key
+
+    # NOTE: This should not be using an opinion in this project
     attr_reader :type
-    attr_reader :namespace
-    attr_reader :project_key
+
+    # Move this up to k_manager
+    # attr_reader :namespace
+    # attr_reader :project_key
     attr_reader :error
 
     # Create container for storing data/documents.
@@ -29,9 +32,9 @@ module KDoc
     # @option opts [String|Symbol] project_key Project that the container belongs to
     def initialize(**opts)
       @key = opts[:key] || SecureRandom.alphanumeric(4)
-      @type = opts[:type] || KDoc.opinion.default_document_type
-      @namespace = opts[:namespace] || ''
-      @project_key = opts[:project_key] || ''
+      @type = opts[:type] || '' # KDoc.opinion.default_document_type
+      # @namespace = opts[:namespace] || ''
+      # @project_key = opts[:project_key] || ''
 
       # Old name is default_data, wonder if I still need that idea?
       # Most documents live within a hash, some tabular documents such as CSV will use an []
@@ -39,16 +42,16 @@ module KDoc
       @data = opts[:data] || {}
     end
 
-    def unique_key
-      @unique_key ||= KDoc.util.build_unique_key(key, type, namespace, project_key)
-    end
+    # def unique_key
+    #   @unique_key ||= KDoc.util.build_unique_key(key, type, namespace, project_key)
+    # end
 
     def debug_header
       log.kv 'key', key
       log.kv 'type', type
-      log.kv 'namespace', namespace
-      log.kv 'project_key', namespace
-      log.kv 'error', error
+      # log.kv 'namespace', namespace
+      # log.kv 'project_key', namespace
+      # log.kv 'error', error
     end
 
     attr_writer :data
