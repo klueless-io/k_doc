@@ -22,10 +22,10 @@ module KDoc
     # Create document
     #
     # @param [String|Symbol] name Name of the document
-    # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_document_type if not set
+    # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_model_type if not set
     # @param default: Default value (using named params), as above
     def initialize(key = nil, **options, &block)
-      super(key: key, type: options[:type], namespace: options[:namespace], project_key: options[:project_key])
+      super(key: key, type: options[:type] || KDoc.opinion.default_model_type) # , namespace: options[:namespace], project_key: options[:project_key])
       initialize_attributes(**options)
 
       @block = block if block_given?
