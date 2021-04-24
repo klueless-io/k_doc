@@ -60,9 +60,10 @@ module KDoc
       @run_actions = nil
     end
 
-    def unique_key
-      @unique_key ||= KDoc.util.build_unique_key(key, type, namespace)
-    end
+    # Move this up to k_manager
+    # def unique_key
+    #   @unique_key ||= KDoc.util.build_unique_key(key, type, namespace)
+    # end
 
     def settings(key = nil, **options, &block)
       options ||= {}
@@ -141,19 +142,17 @@ module KDoc
       log.o(raw_data_struct)
     end
 
-    # rubocop:disable Metrics/AbcSize
     def debug_header
       log.heading self.class.name
       log.kv 'key', key
       log.kv 'type', type
-      log.kv 'namespace', namespace
+      # log.kv 'namespace', namespace
       log.kv 'error', error
 
       debug_header_keys
 
       log.line
     end
-    # rubocop:enable Metrics/AbcSize
 
     def debug_header_keys
       options&.keys&.reject { |k| k == :namespace }&.each do |key|
