@@ -15,7 +15,6 @@ require 'k_doc/model'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
 require 'k_doc/table'
-require 'k_doc/util'
 
 require 'k_doc/decorators/settings_decorator'
 require 'k_doc/decorators/table_decorator'
@@ -25,6 +24,7 @@ module KDoc
   class Error < StandardError; end
 
   class << self
+    # Is this needed
     # Factory method to create a new model
     def model(key = nil, **options, &block)
       model = KDoc::Model.new(key, **options, &block)
@@ -33,12 +33,10 @@ module KDoc
     end
 
     attr_accessor :opinion
-    attr_accessor :util
     attr_accessor :log
   end
 
   KDoc.opinion = KDoc::FakeOpinion.new
-  KDoc.util = KDoc::Util.new
 end
 
 if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
