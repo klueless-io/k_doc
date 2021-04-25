@@ -40,6 +40,12 @@ RSpec.describe KDoc::Model do
   let(:instance) { described_class.new('some_name', &block) }
   let(:block) { nil }
 
+  context '.key' do
+    subject { instance.key }
+
+    it { is_expected.to eq('some_name') }
+  end
+
   context '.type' do
     subject { instance.type }
 

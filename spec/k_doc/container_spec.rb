@@ -20,8 +20,6 @@ RSpec.describe KDoc::Container do
         is_expected.to have_attributes(
           key: match(/^[A-Za-z0-9]{4}$/),
           type: be_empty
-          # namespace: '',
-          # project_key: ''
         )
       end
     end
@@ -53,37 +51,9 @@ RSpec.describe KDoc::Container do
             it { is_expected.to eq(:some_data_type) }
           end
         end
-
-        # context 'with key, type and namespace' do
-        #   let(:instance) { described_class.new(key: key, type: type, namespace: namespace) }
-
-        #   it 'namespace is set' do
-        #     expect(subject.namespace).to eq(:controllers)
-        #   end
-        # end
       end
     end
   end
-
-  # describe '.unique_key' do
-  #   context 'with key' do
-  #     subject { described_class.new(key: key).unique_key }
-
-  #     it { expect(subject).to eq("some-name-#{KDoc.opinion.default_model_type}") }
-  #   end
-
-  #   context 'with key and type' do
-  #     subject { described_class.new(key: key, type: type).unique_key }
-
-  #     it { expect(subject).to eq('some-name-controller') }
-  #   end
-
-  #   context 'with key, type and namespace' do
-  #     subject { described_class.new(key: key, type: type, namespace: namespace).unique_key }
-
-  #     it { expect(subject).to eq('controllers-some-name-controller') }
-  #   end
-  # end
 
   describe '.data' do
     subject { instance.data }
