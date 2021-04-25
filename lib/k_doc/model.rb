@@ -50,7 +50,7 @@ module KDoc
     #   raise
     rescue StandardError => e
       log.error('Standard error in document')
-      puts "key #{unique_key}"
+      # puts "key #{unique_key}"
       # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
       log.error(e.message)
       @error = e
@@ -59,11 +59,6 @@ module KDoc
     ensure
       @run_actions = nil
     end
-
-    # Move this up to k_manager
-    # def unique_key
-    #   @unique_key ||= KDoc.util.build_unique_key(key, type, namespace)
-    # end
 
     def settings(key = nil, **options, &block)
       options ||= {}
@@ -164,6 +159,7 @@ module KDoc
 
     def initialize_attributes(**options)
       @options    = options || {}
+      # Is parent a part of model, or is it part of k_manager::document_taggable
       @parent     = slice_option(:parent)
 
       # Most documents live within a hash, some tabular documents such as CSV will use an []
