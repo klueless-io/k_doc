@@ -55,14 +55,15 @@ module KDoc
         hash[f['name']] = f['default']
       end
 
+      # TODO: clean_symbol should be an option that is turned on or off for the table
       # Override with positional arguments
       args.each_with_index do |arg, i|
-        row[fields[i]['name']] = KUtil.data.clean_symbol(arg)
+        row[fields[i]['name']] = arg # KUtil.data.clean_symbol(arg)
       end
 
       # Override with named args
       named_args.each_key do |key|
-        row[key.to_s] = named_args[key]
+        row[key.to_s] = named_args[key] # KUtil.data.clean_symbol(named_args[key])
       end
 
       @data[@name]['rows'] << row
