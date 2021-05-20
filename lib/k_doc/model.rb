@@ -139,10 +139,10 @@ module KDoc
 
     def debug_header
       log.heading self.class.name
-      log.kv 'key', key
-      log.kv 'type', type
+      log.kv 'key'    , key   , 15
+      log.kv 'type'   , type  , 15
       # log.kv 'namespace', namespace
-      log.kv 'error', error
+      log.kv 'error'  , error , 15
 
       debug_header_keys
 

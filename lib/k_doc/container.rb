@@ -22,9 +22,6 @@ module KDoc
 
     attr_writer :data
 
-    # Move this up to k_manager
-    # attr_reader :namespace
-    # attr_reader :project_key
     attr_reader :error
 
     # Create container for storing data/documents.
@@ -35,8 +32,6 @@ module KDoc
     # @param [Hash] **opts The options
     # @option opts [String|Symbol] name Name of the container
     # @option opts [String|Symbol] type Type of the container, defaults to KDoc:: FakeOpinion.new.default_model_type if not set
-    # @option opts [String|Symbol] namespace Namespace that the container belongs to
-    # @option opts [String|Symbol] project_key Project that the container belongs to
     def initialize(**opts)
       @key = opts[:key] || SecureRandom.alphanumeric(4)
       @type = opts[:type] || ''
@@ -44,8 +39,8 @@ module KDoc
     end
 
     def debug_header
-      log.kv 'key', key
-      log.kv 'type', type
+      log.kv 'key'  , key   , 15
+      log.kv 'type' , type  , 15
     end
 
     def data
