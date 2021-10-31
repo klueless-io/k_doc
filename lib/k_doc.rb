@@ -3,14 +3,23 @@
 require 'securerandom'
 
 require 'table_print'
+require 'forwardable'
 require 'k_log'
 require 'k_type'
 require 'k_util'
 require 'k_decor'
 
 require 'k_doc/version'
-require 'k_doc/container'
+require 'k_doc/mixins/taggable'
+require 'k_doc/mixins/datum'
+require 'k_doc/mixins/block_processor'
+require 'k_doc/mixins/composable_components'
+require 'k_doc/containers/container'
+require 'k_doc/containers/array_container'
+require 'k_doc/containers/hash_container'
 # require 'k_doc/data'
+require 'k_doc/csv_doc'
+require 'k_doc/json_doc'
 require 'k_doc/model'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
@@ -24,12 +33,23 @@ module KDoc
   class Error < StandardError; end
 
   class << self
-    # Is this needed
-    # Factory method to create a new model
     def model(key = nil, **options, &block)
       model = KDoc::Model.new(key, **options, &block)
       model.execute_block
       model
+    end
+
+    # These need to be registerable
+    def document(key = nil, **options, &block)
+      model(key, **{ type: :document }.merge(**options), &block)
+    end
+
+    def bootstrap(key = nil, **options, &block)
+      model(key, **{ type: :bootstrap }.merge(**options), &block)
+    end
+
+    def app_settings(key = nil, **options, &block)
+      model(key, **{ type: :app_settings }.merge(**options), &block)
     end
 
     attr_accessor :opinion

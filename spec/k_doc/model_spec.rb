@@ -37,7 +37,7 @@ require 'spec_helper'
 RSpec.describe KDoc::Model do
   subject { instance }
 
-  let(:instance) { described_class.new('some_name', &block) }
+  let(:instance) { described_class.new('some_name', custom: 'blah', &block) }
   let(:block) { nil }
 
   context '.key' do
