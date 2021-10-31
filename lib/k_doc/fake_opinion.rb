@@ -5,8 +5,11 @@ require 'json'
 module KDoc
   # This is called fake opinion because I have not figured out
   # how I want to implement this
+  # Need to look at the configuration patterns, this is really a configuration
   class FakeOpinion
     attr_accessor :default_model_type
+    attr_accessor :default_csv_type
+    attr_accessor :default_json_type
     attr_accessor :default_settings_key
     attr_accessor :default_table_key
 
@@ -16,6 +19,8 @@ module KDoc
 
     def initialize
       @default_model_type = :entity
+      @default_csv_type = :csv
+      @default_json_type = :json
       @default_settings_key = :settings
       @default_table_key = :table
 
