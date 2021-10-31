@@ -3,7 +3,7 @@
 module KDoc
   # Model is a DSL for modeling general purpose data objects
   #
-  # A mode can have
+  # A model can have
   #  - 0 or more named setting groups each with their key/value pairs
   #  - 0 or more named table groups each with their own columns and rows
   #
@@ -17,16 +17,8 @@ module KDoc
     # include KType::NamedFolder
     # include KType::LayeredFolder
 
-    attr_reader :options
-
-    # Create document
-    #
-    # @param [String|Symbol] name Name of the document
-    # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_model_type if not set
-    # @param default: Default value (using named params), as above
-    def initialize(key = nil, **options, &block)
-      super(key: key, type: options[:type] || KDoc.opinion.default_model_type) # , namespace: options[:namespace], project_key: options[:project_key])
-      initialize_attributes(**options)
+    def initialize(key = nil, **opts, &block)
+      super(**{ key: key }.merge(opts))
 
       @block = block if block_given?
     end
@@ -60,21 +52,22 @@ module KDoc
       @run_actions = nil
     end
 
-    def settings(key = nil, **options, &block)
-      options ||= {}
+    # Need to look at Director as an alternative to this technique
+    def settings(key = nil, **setting_opts, &block)
+      setting_opts ||= {}
 
-      opts = {}.merge(@options) # Data Options
-               .merge(options)  # Settings Options
-               .merge(parent: self)
+      setting_opts = {}.merge(opts) # Container options
+                       .merge(setting_opts) # Settings setting_opts
+                       .merge(parent: self)
 
-      settings_instance(@data, key, **opts, &block)
+      settings_instance(data, key, **setting_opts, &block)
       # settings.run_decorators(opts)
     end
 
-    def table(key = :table, **options, &block)
+    def table(key = :table, **opts, &block)
       # NEED to add support for run_decorators I think
-      options.merge(parent: self)
-      table_instance(@data, key, **options, &block)
+      opts.merge(parent: self)
+      table_instance(data, key, **opts, &block)
     end
     alias rows table
 
@@ -83,6 +76,16 @@ module KDoc
     #   # example
     #   KDoc::Builder::Shotstack.new(@data, key, &block)
     # end
+
+    # Need to move this down to container
+    # Need to use some sort of cache invalidation to know if the internal data has been altered
+    def odata
+      @odata ||= data_struct
+    end
+
+    def oraw
+      @oraw ||= raw_data_struct
+    end
 
     def data_struct
       KUtil.data.to_open_struct(data)
@@ -93,9 +96,13 @@ module KDoc
       KUtil.data.to_open_struct(raw_data)
     end
 
+    def default_container_type
+      KDoc.opinion.default_model_type
+    end
+
     def get_node_type(node_name)
       node_name = KUtil.data.clean_symbol(node_name)
-      node_data = @data[node_name]
+      node_data = data[node_name]
 
       raise KDoc::Error, "Node not found: #{node_name}" if node_data.nil?
 
@@ -139,47 +146,26 @@ module KDoc
 
     def debug_header
       log.heading self.class.name
-      log.kv 'key'    , key   , 15
-      log.kv 'type'   , type  , 15
-      # log.kv 'namespace', namespace
-      log.kv 'error'  , error , 15
-
+      debug_container
       debug_header_keys
 
       log.line
     end
 
     def debug_header_keys
-      options&.keys&.reject { |k| k == :namespace }&.each do |key|
-        log.kv key, options[key]
+      opts&.keys&.reject { |k| k == :namespace }&.each do |key|
+        log.kv key, opts[key]
       end
     end
 
     private
 
-    def initialize_attributes(**options)
-      @options    = options || {}
-      # Is parent a part of model, or is it part of k_manager::document_taggable
-      @parent     = slice_option(:parent)
-
-      # Most documents live within a hash, some tabular documents such as CSV will use an []
-      @data       = slice_option(:default_data) || {}
+    def settings_instance(data, key, **opts, &block)
+      KDoc.opinion.settings_class.new(data, key, **opts, &block)
     end
 
-    def settings_instance(data, key, **options, &block)
-      KDoc.opinion.settings_class.new(data, key, **options, &block)
-    end
-
-    def table_instance(data, key, **options, &block)
-      KDoc.opinion.table_class.new(data, key, **options, &block)
-    end
-
-    def slice_option(key)
-      return nil unless @options.key?(key)
-
-      result = @options[key]
-      @options.delete(key)
-      result
+    def table_instance(data, key, **opts, &block)
+      KDoc.opinion.table_class.new(data, key, **opts, &block)
     end
   end
 end

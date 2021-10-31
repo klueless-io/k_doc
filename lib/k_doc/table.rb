@@ -25,10 +25,7 @@ module KDoc
     #
     # The older format of an array is supported via a splat conversion
     def fields(*field_definitions)
-      if field_definitions.length == 1 && field_definitions[0].is_a?(Array)
-        log.warn('avoid supplying field definitions with array. *Splat fields is the preferred technique.')
-        field_definitions = *field_definitions[0]
-      end
+      field_definitions = *field_definitions[0] if field_definitions.length == 1 && field_definitions[0].is_a?(Array)
 
       fields = @data[@name]['fields']
 
