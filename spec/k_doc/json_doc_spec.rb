@@ -20,6 +20,12 @@ RSpec.describe KDoc::JsonDoc do
     it { is_expected.to eq(KDoc.opinion.default_json_type) }
   end
 
+  describe '.data' do
+    subject { instance.data }
+
+    it { is_expected.to eq({}) }
+  end
+
   context 'when valid json file' do
     let(:file) { 'spec/samples/sample.json' }
 
@@ -30,42 +36,62 @@ RSpec.describe KDoc::JsonDoc do
 
       describe '.file' do
         subject { instance.file }
-      
+
         it { is_expected.to eq 'spec/samples/sample.json' }
       end
       describe '.loaded?' do
         subject { instance.loaded? }
-      
+
         it { is_expected.to be_falsey }
       end
       context '.data' do
         subject { instance.data }
-      
+
         it { is_expected.to be_empty }
       end
     end
 
     context 'when loaded' do
       let(:instance) do
-        described_class.new(file: file) do
+        described_class.new(file: file, data: { zzz: :yyy }) do
           load
         end
       end
+      let(:sample_data) { JSON.parse(File.read(file)) }
+
+      before { instance.eval_block }
 
       describe '.file' do
         subject { instance.file }
-      
-        it { is_expected.to eq 'spec/samples/sample.json' }
+
+        it { is_expected.to eq(file) }
       end
       describe '.loaded?' do
         subject { instance.loaded? }
-      
-        it { is_expected.to be_falsey }
+
+        it { is_expected.to be_truthy }
       end
       context '.data' do
         subject { instance.data }
-      
-        it { is_expected.to be_empty }
+
+        it { is_expected.to eq(sample_data) }
+      end
+    end
+
+    context 'when loaded using data_action: :append' do
+      let(:instance) do
+        described_class.new(file: file, data: { zzz: :yyy }) do
+          load(data_action: :append)
+        end
+      end
+      let(:sample_data) { JSON.parse(File.read(file)) }
+
+      before { instance.eval_block }
+
+      context '.data' do
+        subject { instance.data }
+
+        it { is_expected.to eq({ zzz: :yyy }.merge(sample_data)) }
       end
     end
   end

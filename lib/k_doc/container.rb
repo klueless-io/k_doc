@@ -5,15 +5,12 @@ module KDoc
   # such as unique key, type and namespace.
   class Container
     include KLog::Logging
+    include KDoc::Guarded
     include KDoc::Taggable
     include KDoc::Datum
     include KDoc::BlockProcessor
 
     attr_reader :opts
-
-    # extend Forwardable
-
-    # def_delegators :command, :run
 
     def initialize(**opts, &block)
       @opts = opts
@@ -21,8 +18,6 @@ module KDoc
       initialize_tag(opts)
       initialize_data(opts)
       initialize_block(opts, &block)
-
-      guard("Incompatible data type - #{default_data_value.class} is incompatible with #{data.class}") unless data.is_a?(default_data_value.class)
     end
 
     def default_container_type
@@ -36,18 +31,6 @@ module KDoc
     def debug
       debug_container
       debug_errors
-    end
-
-    def guard(message)
-      errors << message
-    end
-
-    def errors
-      @errors ||= []
-    end
-
-    def valid?
-      @errors.length.zero?
     end
 
     private

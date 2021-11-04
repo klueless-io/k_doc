@@ -24,13 +24,13 @@ RSpec.describe KDoc::BlockProcessor do
 
       describe '.block' do
         subject { instance.block }
-      
+
         it { is_expected.to be_nil }
       end
 
       describe '.some_data' do
         subject { instance.some_data }
-      
+
         it { is_expected.to eq({ x: :men }) }
       end
     end
@@ -48,7 +48,7 @@ RSpec.describe KDoc::BlockProcessor do
 
       describe '.block' do
         subject { instance.block }
-      
+
         it { is_expected.not_to be_nil }
       end
 

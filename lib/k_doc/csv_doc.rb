@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
+require 'csv'
+
 module KDoc
   # CsvDoc is a DSL for modeling CSV data objects
   class CsvDoc < KDoc::Container
-    include KLog::Logging
+    attr_reader :file
 
-    # Create csv document
+    # Create CSV document
     #
     # @param [String|Symbol] name Name of the document
     # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_csv_type if not set
@@ -13,78 +15,50 @@ module KDoc
     def initialize(key = nil, **opts, &block)
       super(**{ key: key }.merge(opts))
 
+      initialize_file
+
       @block = block if block_given?
     end
 
-    # NOTE: Can this be moved out of the is object?
-    def execute_block(run_actions: nil)
-      return if @block.nil?
+    # Load data from file
+    #
+    # @param [Symbol] load_action The load_action to take if data has already been loaded
+    # @param [:once] load_action :once will load the data from content source on first try only
+    # @param [:reload] load_action :reload will reload from content source each time
+    # @param [Symbol] data_action The data_action to take when setting data, defaults to :replace
+    # @param [:replace] data_action :replace will replace the existing data instance with the incoming data value
+    # @param [:append] data_action :append will keep existing data and then new value data over the top
+    def load(load_action: :once, data_action: :replace)
+      return if load_action == :once && loaded?
 
-      # The DSL actions method will only run on run_actions: true
-      @run_actions = run_actions
+      rows = []
 
-      instance_eval(&@block)
+      CSV.foreach(file, headers: true, header_converters: :symbol) do |row|
+        rows << row.to_h
+      end
 
-      on_action if run_actions && respond_to?(:on_action)
-    # rescue KDoc::Error => e
-    #   puts('KDoc::Error in document')
-    #   puts "key #{unique_key}"
-    #   # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
-    #   puts(e.message)
-    #   @error = e
-    #   raise
-    rescue StandardError => e
-      log.error('Standard error in document')
-      # puts "key #{unique_key}"
-      # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
-      log.error(e.message)
-      @error = e
-      # log.exception exception2
-      raise
-    ensure
-      @run_actions = nil
-    end
+      set_data(rows, data_action: data_action)
 
-    def settings(key = nil, **opts, &block)
-      opts ||= {}
-
-      opts = {}.merge(@opts) # Data opts
-               .merge(opts)  # Settings opts
-               .merge(parent: self)
-
-      settings_instance(@data, key, **opts, &block)
-      # settings.run_decorators(opts)
-    end
-
-    def data
-      @data ||= opts[:data] || opts[:default_data] || []
-    end
-
-    def csv_file
-      return @csv_file if defined? @csv_file
-
-      @csv_file = opts[:csv_file]
-      @loaded   = false
-    end
-
-    private
-
-    def initialize_attributes(**opts)
-      @data     = opts[:data] || opts[:default_data] || []
-      @csv_file = opts[:csv_file]
-      @loaded   = false
+      @loaded = true
     end
 
     def loaded?
       @loaded
     end
 
-    def slice_option(key)
-      return nil unless @opts.key?(key)
+    private
 
-      result = @opts[key]
-      @opts.delete(key)
-      result
+    def initialize_file
+      @file ||= opts.delete(:file) || ''
+      @loaded = false
+    end
+
+    def default_data_value
+      []
+    end
+
+    def default_container_type
+      :csv
     end
   end
 end

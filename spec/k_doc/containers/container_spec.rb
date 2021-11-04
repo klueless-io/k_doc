@@ -72,8 +72,8 @@ RSpec.describe KDoc::Container do
       context 'with incompatible custom data option' do
         let(:data) { [] }
 
-        context '.errors' do
-          subject { instance.errors }
+        context '.error_messages' do
+          subject { instance.error_messages }
 
           it { is_expected.to include('Incompatible data type - Hash is incompatible with Array') }
           # it { instance.debug }

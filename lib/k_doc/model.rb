@@ -23,35 +23,6 @@ module KDoc
       @block = block if block_given?
     end
 
-    # NOTE: Can this be moved out of the is object?
-    def execute_block(run_actions: nil)
-      return if @block.nil?
-
-      # The DSL actions method will only run on run_actions: true
-      @run_actions = run_actions
-
-      instance_eval(&@block)
-
-      on_action if run_actions && respond_to?(:on_action)
-    # rescue KDoc::Error => e
-    #   puts('KDoc::Error in document')
-    #   puts "key #{unique_key}"
-    #   # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
-    #   puts(e.message)
-    #   @error = e
-    #   raise
-    rescue StandardError => e
-      log.error('Standard error in document')
-      # puts "key #{unique_key}"
-      # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
-      log.error(e.message)
-      @error = e
-      # log.exception exception2
-      raise
-    ensure
-      @run_actions = nil
-    end
-
     # Need to look at Director as an alternative to this technique
     def settings(key = nil, **setting_opts, &block)
       setting_opts ||= {}

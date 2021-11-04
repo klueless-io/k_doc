@@ -18,6 +18,7 @@ module KDoc
 
     def eval_block
       return if @block.nil?
+
       instance_eval(&@block)
     rescue StandardError => e
       log.error('Standard error in document')
@@ -30,6 +31,7 @@ module KDoc
 
     def run_on_action
       return if @block.nil?
+
       on_action if respond_to?(:on_action)
     rescue StandardError => e
       log.error('Standard error while running actions')
