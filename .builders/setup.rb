@@ -9,10 +9,10 @@ klue
   .with(:design_patterns) do
     composite(
       relative_path: 'mixins',
-      name: :composable_components,
+      name: :composite_spec,
       namespace: 'KDoc',
-      children_name: :component,
-      children_name_plural: :components)
+      children_name: :child,
+      children_name_plural: :children)
   end
 
 puts '...'
