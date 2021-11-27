@@ -12,6 +12,13 @@ module KDoc
 
     attr_reader :opts
 
+    # TODO: Owner/Owned need to be in a module and tested
+    attr_accessor :owner
+    
+    def owned?
+      @owner != nil
+    end
+
     def initialize(**opts, &block)
       @opts = opts
 

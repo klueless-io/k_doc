@@ -1,0 +1,15 @@
+people:
+  - dave:
+      name: David
+      job: Developer
+      skills:
+        - python
+        - perl
+        - pascal
+  - jin:
+      name: Jin
+      job: Developer
+      skills:
+        - lisp
+        - fortran
+        - erlang

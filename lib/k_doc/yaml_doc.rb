@@ -1,20 +1,23 @@
 # frozen_string_literal: true
 
+require 'yaml'
+
 module KDoc
-  # JsonDoc is a DSL for modeling JSON data objects
-  class JsonDoc < KDoc::Container
+  # YamlDoc is a DSL for modeling YAML data objects
+  class YamlDoc < KDoc::Container
     attr_reader :file
 
-    # Create JSON document
+    # Create YAML document
     #
     # @param [String|Symbol] name Name of the document
     # @param args[0] Type of the document, defaults to KDoc:: FakeOpinion.new.default_csv_type if not set
     # @param default: Default value (using named params), as above
-    # @param [Proc] block The block is stored and accessed different types in the document loading workflow.
-    def initialize(key = nil, **opts, &_block)
+    def initialize(key = nil, **opts, &block)
       super(**{ key: key }.merge(opts))
 
       initialize_file
+
+      @block = block if block_given?
     end
 
     # Load data from file
@@ -29,7 +32,7 @@ module KDoc
       return if load_action == :once && loaded?
 
       content = File.read(file)
-      hash = JSON.parse(content)
+      hash = YAML.safe_load(content)
 
       set_data(hash, data_action: data_action)
 
@@ -52,7 +55,7 @@ module KDoc
     end
 
     def default_container_type
-      :json
+      :yaml
     end
   end
 end
