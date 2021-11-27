@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 module KDoc
-  # Guarded (this could be moved into KType)
+  # Guarded provides parameter waring and guarding
+  #
+  # TODO: this could be moved into KType or KGuard
   module Guarded
     def guard(message)
       errors << OpenStruct.new(type: :guard, message: message)

@@ -10,6 +10,7 @@ module KDoc
     attr_accessor :default_model_type
     attr_accessor :default_csv_type
     attr_accessor :default_json_type
+    attr_accessor :default_yaml_type
     attr_accessor :default_settings_key
     attr_accessor :default_table_key
 
@@ -21,6 +22,7 @@ module KDoc
       @default_model_type = :entity
       @default_csv_type = :csv
       @default_json_type = :json
+      @default_yaml_type = :yaml
       @default_settings_key = :settings
       @default_table_key = :table
 

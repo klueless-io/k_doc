@@ -18,9 +18,7 @@ module KDoc
     # include KType::LayeredFolder
 
     def initialize(key = nil, **opts, &block)
-      super(**{ key: key }.merge(opts))
-
-      @block = block if block_given?
+      super(**{ key: key }.merge(opts), &block)
     end
 
     # Need to look at Director as an alternative to this technique

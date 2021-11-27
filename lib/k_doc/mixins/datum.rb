@@ -8,6 +8,7 @@ module KDoc
     attr_reader :data
 
     def initialize_data(opts)
+      @default_data_value = opts.delete(:default_data_value) if opts.key?(:default_data_value)
       @data = opts.delete(:data) || opts.delete(:default_data) || default_data_value
 
       return if data.is_a?(default_data_value.class)
@@ -17,7 +18,7 @@ module KDoc
     end
 
     def default_data_value
-      raise 'Implement default_data_value in container'
+      raise 'Implement default_data_value in container' unless @default_data_value
     end
 
     # Write data object
