@@ -19,6 +19,7 @@ require 'k_doc/container'
 # require 'k_doc/data'
 require 'k_doc/csv_doc'
 require 'k_doc/json_doc'
+require 'k_doc/yaml_doc'
 require 'k_doc/model'
 require 'k_doc/fake_opinion'
 require 'k_doc/settings'
@@ -49,6 +50,24 @@ module KDoc
 
     def app_settings(key = nil, **options, &block)
       model(key, **{ type: :app_settings }.merge(**options), &block)
+    end
+
+    def csv(key = nil, **options, &block)
+      doc = KDoc::CsvDoc.new(key, **options, &block)
+      doc.execute_block
+      doc
+    end
+
+    def json(key = nil, **options, &block)
+      doc = KDoc::JsonDoc.new(key, **options, &block)
+      doc.execute_block
+      doc
+    end
+
+    def yaml(key = nil, **options, &block)
+      doc = KDoc::YamlDoc.new(key, **options, &block)
+      doc.execute_block
+      doc
     end
 
     attr_accessor :opinion
