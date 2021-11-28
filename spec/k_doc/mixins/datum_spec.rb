@@ -11,14 +11,14 @@ class DatumContainer
 end
 
 class DatumHash < DatumContainer
-  def default_data_value
-    {}
+  def default_data_type
+    Hash
   end
 end
 
 class DatumArray < DatumContainer
-  def default_data_value
-    []
+  def default_data_type
+    Array
   end
 end
 
@@ -47,19 +47,25 @@ RSpec.describe DatumHash do
       context 'when data type mismatch' do
         let(:opts) { { data: [1, 2, 3] } }
 
-        it { is_expected.to eq({}) }
+        it { is_expected.to be_a(Array) }
 
         context '.error_messages' do
           subject { instance.error_messages }
 
-          it { is_expected.to include('Incompatible data type - Hash is incompatible with Array') }
+          it { is_expected.to include('Incompatible data type - Hash is incompatible with Array in constructor') }
         end
       end
 
       context 'when data option missing' do
         let(:opts) { {} }
 
-        it { is_expected.to eq({}) }
+        it { is_expected.to be_a(Hash) }
+      end
+
+      context 'when default data option missing' do
+        let(:opts) { {} }
+
+        it { is_expected.to be_a(Hash) }
       end
     end
   end
@@ -162,12 +168,12 @@ RSpec.describe DatumArray do
       context 'when data type mismatch' do
         let(:opts) { { data: { x: :men } } }
 
-        it { is_expected.to eq([]) }
+        it { is_expected.to be_a(Hash) }
 
         context '.error_messages' do
           subject { instance.error_messages }
 
-          it { is_expected.to include('Incompatible data type - Array is incompatible with Hash') }
+          it { is_expected.to include('Incompatible data type - Array is incompatible with Hash in constructor') }
         end
       end
 

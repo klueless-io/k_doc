@@ -5,12 +5,14 @@ module KDoc
   #
   # TODO: this could be moved into KType or KGuard
   module Guarded
+    Guard = Struct.new(:type, :message)
+
     def guard(message)
-      errors << OpenStruct.new(type: :guard, message: message)
+      errors << Guard.new(:guard, message)
     end
 
     def warn(message)
-      errors << OpenStruct.new(type: :warning, message: message)
+      errors << Guard.new(:warning, message)
     end
     alias warning warn
 
@@ -19,11 +21,18 @@ module KDoc
     end
 
     def error_messages
-      @errors.map(&:message)
+      errors.map(&:message)
     end
 
     def valid?
-      @errors.length.zero?
+      errors.length.zero?
+    end
+
+    def log_any_messages
+      errors.each do |error|
+        log.warn error.message if error.type == :warning
+        log.error error.message if error.type == :guard
+      end
     end
   end
 end
