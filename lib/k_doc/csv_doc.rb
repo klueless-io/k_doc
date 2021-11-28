@@ -53,8 +53,8 @@ module KDoc
       @loaded = false
     end
 
-    def default_data_value
-      []
+    def default_data_type
+      Array
     end
 
     def default_container_type
