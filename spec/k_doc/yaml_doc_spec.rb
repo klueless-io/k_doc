@@ -53,7 +53,7 @@ RSpec.describe KDoc::YamlDoc do
 
     context 'when loaded' do
       let(:instance) do
-        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_value: []) do
+        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
           load
         end
       end
@@ -80,7 +80,7 @@ RSpec.describe KDoc::YamlDoc do
 
     context 'when loaded using data_action: :append' do
       let(:instance) do
-        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_value: []) do
+        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
           load(data_action: :append)
         end
       end
@@ -91,7 +91,7 @@ RSpec.describe KDoc::YamlDoc do
       context '.data' do
         subject { instance.data }
 
-        it { is_expected.to eq([{zzz: :yyy }] + sample_data) }
+        it { is_expected.to eq([{ zzz: :yyy }] + sample_data) }
       end
     end
   end
@@ -123,7 +123,7 @@ RSpec.describe KDoc::YamlDoc do
 
     context 'when loaded' do
       let(:instance) do
-        described_class.new(file: file, data: { zzz: :yyy }, default_data_value: {}) do
+        described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
           load
         end
       end
@@ -150,7 +150,7 @@ RSpec.describe KDoc::YamlDoc do
 
     context 'when loaded using data_action: :append' do
       let(:instance) do
-        described_class.new(file: file, data: { zzz: :yyy }, default_data_value: {}) do
+        described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
           load(data_action: :append)
         end
       end
@@ -161,7 +161,7 @@ RSpec.describe KDoc::YamlDoc do
       context '.data' do
         subject { instance.data }
 
-        it { is_expected.to eq({zzz: :yyy }.merge(sample_data)) }
+        it { is_expected.to eq({ zzz: :yyy }.merge(sample_data)) }
       end
     end
   end

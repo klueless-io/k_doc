@@ -47,8 +47,8 @@ module KDoc
       @loaded = false
     end
 
-    def default_data_value
-      @default_data_value ||= {}
+    def default_data_type
+      Hash
     end
 
     def default_container_type

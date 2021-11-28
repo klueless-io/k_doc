@@ -14,7 +14,7 @@ module KDoc
 
     # TODO: Owner/Owned need to be in a module and tested
     attr_accessor :owner
-    
+
     def owned?
       @owner != nil
     end
@@ -31,8 +31,8 @@ module KDoc
       :container
     end
 
-    def default_data_value
-      {}
+    def default_data_type
+      Hash
     end
 
     def debug

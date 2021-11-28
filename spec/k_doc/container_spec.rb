@@ -75,7 +75,7 @@ RSpec.describe KDoc::Container do
         context '.error_messages' do
           subject { instance.error_messages }
 
-          it { is_expected.to include('Incompatible data type - Hash is incompatible with Array') }
+          it { is_expected.to include('Incompatible data type - Hash is incompatible with Array in constructor') }
           # it { instance.debug }
         end
       end
