@@ -56,7 +56,7 @@ RSpec.describe TaggableContainer do
       describe '.tag' do
         subject { instance.tag }
 
-        it { is_expected.to eq("#{instance.type}_#{instance.key}".to_sym) }
+        it { is_expected.to eq("#{instance.key}_#{instance.type}".to_sym) }
       end
 
       context 'with key (string)' do
@@ -71,7 +71,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.key}_#{instance.type}".to_sym) }
         end
       end
 
@@ -87,7 +87,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.key}_#{instance.type}".to_sym) }
         end
       end
 
@@ -103,7 +103,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.project}_#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.project}_#{instance.key}_#{instance.type}".to_sym) }
         end
       end
 
@@ -119,7 +119,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.namespace.first}_#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.namespace.first}_#{instance.key}_#{instance.type}".to_sym) }
         end
       end
 
@@ -135,7 +135,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.namespace.join('_')}_#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.namespace.join('_')}_#{instance.key}_#{instance.type}".to_sym) }
         end
       end
 
@@ -154,7 +154,7 @@ RSpec.describe TaggableContainer do
         describe '.tag' do
           subject { instance.tag }
 
-          it { is_expected.to eq("#{instance.project}_#{instance.namespace.join('_')}_#{instance.type}_#{instance.key}".to_sym) }
+          it { is_expected.to eq("#{instance.project}_#{instance.namespace.join('_')}_#{instance.key}_#{instance.type}".to_sym) }
         end
 
         context 'tag_options.keys are removed after access' do

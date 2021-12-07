@@ -44,6 +44,7 @@ module KDoc
       @type ||= @tag_options.delete(:type) || default_container_type
     end
 
+    # TODO: rename to area (or area root namespace)
     # Project name
     #
     # Examples
@@ -107,8 +108,8 @@ module KDoc
       values = []
       values << project if project
       values += namespace
-      values << type if type
       values << key
+      values << type if type
       values -= [nil, '']
       @tag = values.join('_').to_sym
     end

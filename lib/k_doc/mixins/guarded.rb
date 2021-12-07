@@ -24,6 +24,14 @@ module KDoc
       errors.map(&:message)
     end
 
+    def error_hash
+      errors.map(&:to_h)
+    end
+
+    # TODO: Add these predicates
+    # def errors?
+    # def warnings?
+
     def valid?
       errors.length.zero?
     end
