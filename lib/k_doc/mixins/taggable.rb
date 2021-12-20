@@ -89,17 +89,18 @@ module KDoc
 
     # rubocop:disable Metrics/AbcSize
     def debug_container
-      log.kv 'tag' , tag , debug_pad_size
-      log.kv 'project'  , project   , debug_pad_size unless project.nil? || project.empty?
-      log.kv 'namespace', namespace , debug_pad_size unless namespace.nil? || namespace.empty?
-      log.kv 'key'      , key       , debug_pad_size
-      log.kv 'type'     , type      , debug_pad_size
+      log.kv 'tag'        , tag               , debug_pad_size
+      log.kv 'project'    , project           , debug_pad_size unless project.nil? || project.empty?
+      log.kv 'namespace'  , namespace         , debug_pad_size unless namespace.nil? || namespace.empty?
+      log.kv 'key'        , key               , debug_pad_size
+      log.kv 'type'       , type              , debug_pad_size
+      log.kv 'class type' , self.class.name   , debug_pad_size
       # log.kv 'error'    , error     , debug_kv_pad_size
     end
     # rubocop:enable Metrics/AbcSize
 
     def debug_pad_size
-      @debug_pad_size ||= @tag_options.delete(:debug_pad_size) || 15
+      @debug_pad_size ||= @tag_options.delete(:debug_pad_size) || 20
     end
 
     private

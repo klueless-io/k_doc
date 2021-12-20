@@ -32,7 +32,7 @@ module KDoc
     end
 
     def default_data_type
-      Hash
+      @default_data_type ||= Hash
     end
 
     def debug

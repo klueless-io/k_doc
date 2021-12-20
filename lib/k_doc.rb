@@ -17,6 +17,7 @@ require 'k_doc/mixins/block_processor'
 require 'k_doc/mixins/composable_components'
 require 'k_doc/container'
 # require 'k_doc/data'
+require 'k_doc/action'
 require 'k_doc/csv_doc'
 require 'k_doc/json_doc'
 require 'k_doc/yaml_doc'
@@ -50,6 +51,12 @@ module KDoc
 
     def app_settings(key = nil, **options, &block)
       model(key, **{ type: :app_settings }.merge(**options), &block)
+    end
+
+    def action(key = nil, **options, &block)
+      doc = KDoc::Action.new(key, **options, &block)
+      doc.execute_block
+      doc
     end
 
     def csv(key = nil, **options, &block)
