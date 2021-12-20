@@ -28,7 +28,7 @@ RSpec.describe KDoc::Container do
                                        type: :controller,
                                        namespace: %i[app admin controllers],
                                        project: :spaceman,
-                                       tag: :spaceman_app_admin_controllers_controller_some_name,
+                                       tag: :spaceman_app_admin_controllers_some_name_controller,
                                        opts: { other1: 123, other2: :xyz })
       }
 
@@ -52,7 +52,7 @@ RSpec.describe KDoc::Container do
                                          type: :controller,
                                          namespace: %i[app admin controllers],
                                          project: :spaceman,
-                                         tag: :spaceman_app_admin_controllers_controller_some_name,
+                                         tag: :spaceman_app_admin_controllers_some_name_controller,
                                          opts: { other1: 123, other2: :xyz })
         }
 

@@ -7,7 +7,7 @@ module KDoc
   module Guarded
     Guard = Struct.new(:type, :message)
 
-    def guard(message)
+    def guard(message, log: false)
       errors << Guard.new(:guard, message)
     end
 
@@ -41,6 +41,10 @@ module KDoc
         log.warn error.message if error.type == :warning
         log.error error.message if error.type == :guard
       end
+    end
+
+    def clear_errors
+      errors.clear
     end
   end
 end
