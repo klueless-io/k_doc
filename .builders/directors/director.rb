@@ -180,6 +180,6 @@ class Director
 
     return if @builder
 
-    @builder = KBuilder::BaseBuilder.init(KBuilder.configuration(opts[:builder_config_name]))
+    @builder = KBuilder::BaseBuilder.init(KConfig.configuration(opts[:builder_config_name]))
   end
 end
