@@ -1,5 +1,5 @@
 KBuilder.reset(:gem)
-KBuilder.configure(:gem) do |config|
+KConfig.configure(:gem) do |config|
   # config.template_folders.add(:global     , '~/dev/kgems/k_templates/definitions/genesis')
   config.target_folders.add(:root         , File.expand_path('..', Dir.getwd))
   config.target_folders.add(:lib          , :root, 'lib', 'k_doc')
@@ -7,14 +7,14 @@ KBuilder.configure(:gem) do |config|
 end
 
 KBuilder.reset(:design_patterns)
-KBuilder.configure(:design_patterns) do |config|
+KConfig.configure(:design_patterns) do |config|
   config.template_folders.add(:global     , '~/dev/kgems/k_templates/templates/ruby_design_patterns')
   config.target_folders.add(:root         , File.expand_path('..', Dir.getwd))
   config.target_folders.add(:lib          , :root, 'lib', 'k_doc')
   config.target_folders.add(:spec         , :root, 'spec', 'k_doc')
 end
 
-# KBuilder.configuration(:gem).debug
+# KConfig.configuration(:gem).debug
 
 # def builder
 #   @builder ||= KBuilder::BaseBuilder.init
