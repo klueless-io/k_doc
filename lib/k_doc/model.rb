@@ -115,7 +115,8 @@ module KDoc
 
     def debug_header
       log.heading self.class.name
-      debug_container
+      debug_taggable
+      debug_block_processor
       debug_header_keys
 
       log.line

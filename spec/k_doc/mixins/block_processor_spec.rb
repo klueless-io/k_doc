@@ -14,6 +14,8 @@ class TestBlock
 end
 
 RSpec.describe KDoc::BlockProcessor do
+  include KLog::Logging
+
   subject { instance }
 
   describe TestBlock do
@@ -21,6 +23,9 @@ RSpec.describe KDoc::BlockProcessor do
 
     context 'when no block_given?' do
       let(:instance) { described_class.new(**opts) }
+
+      it { expect(instance).not_to be_evaluated }
+      it { expect(instance).not_to be_actioned }
 
       describe '.block' do
         subject { instance.block }
@@ -46,10 +51,19 @@ RSpec.describe KDoc::BlockProcessor do
         end
       end
 
+      it { expect(instance).not_to be_evaluated }
+      it { expect(instance).not_to be_actioned }
+
       describe '.block' do
         subject { instance.block }
 
         it { is_expected.not_to be_nil }
+      end
+
+      describe '.block_state' do
+        subject { instance.block_state }
+
+        it { is_expected.to eq(:initial) }
       end
 
       describe '.some_data' do
@@ -63,9 +77,28 @@ RSpec.describe KDoc::BlockProcessor do
 
             it { is_expected.to eq({ y: :men }) }
 
+            it { expect(instance).to be_evaluated }
+            it { expect(instance).not_to be_actioned }
+
+            describe '.block_state' do
+              subject { instance.block_state }
+
+              it { is_expected.to eq(:evaluated) }
+            end
+
             context 'after run_on_action' do
               before { instance.run_on_action }
+
               it { is_expected.to eq({ z: :men }) }
+
+              it { expect(instance).to be_evaluated }
+              it { expect(instance).to be_actioned }
+
+              describe '.block_state' do
+                subject { instance.block_state }
+
+                it { is_expected.to eq(:actioned) }
+              end
             end
           end
         end

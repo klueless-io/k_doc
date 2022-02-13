@@ -67,28 +67,10 @@ module KDoc
       @namespace = ns.is_a?(Array) ? ns : [ns]
     end
 
-    # # Internal data object
-    # def data
-    #   @data ||= @tag_options.delete(:data) || @tag_options.delete(:default_data) || default_data_value
-    #   # Settings and Table on Model needed access to @data for modification, I don't think this should be a clone
-    #   # never return the original data object, but at the same time
-    #   # do not re-clone it every time this accessor is called.
-    #   # @clone_data ||= @data.clone
-    # end
-
-    # Implement in container
-    # def default_container_type
-    # :container
-    # end
-
-    # def default_data_value
-    #   {}
-    # end
-
     protected
 
     # rubocop:disable Metrics/AbcSize
-    def debug_container
+    def debug_taggable
       log.kv 'tag'        , tag               , debug_pad_size
       log.kv 'project'    , project           , debug_pad_size unless project.nil? || project.empty?
       log.kv 'namespace'  , namespace         , debug_pad_size unless namespace.nil? || namespace.empty?
