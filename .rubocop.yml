@@ -44,15 +44,20 @@ Layout/LineLength:
 Lint/UnusedMethodArgument:
   AllowUnusedKeywordArguments: true
 
-Style/Documentation:
+Style/AccessorGrouping:
   Enabled: false
-
 Style/BlockComments:
   Enabled: false
   Include:
     - "**/spec/*"
-
-# My Preferences - Start
+Style/Documentation:
+  Enabled: false
+Style/EmptyMethod:    
+  Exclude:
+    - "**/spec/**/*"
+Style/OpenStructUse:
+  Exclude:
+    - "**/spec/**/*"
 Metrics/ClassLength:
   Enabled: false
 Metrics/ModuleLength:
@@ -63,23 +68,14 @@ Naming/MemoizedInstanceVariableName:
 Naming/VariableNumber:
   Exclude:
     - "**/spec/**/*"
-Style/EmptyMethod:    
-  Exclude:
-    - "**/spec/**/*"
 Metrics/ParameterLists:
   Exclude:
     - "**/spec/**/*"
 Layout/EmptyLineBetweenDefs:
   Exclude:
     - "**/spec/**/*"
-
 Lint/AmbiguousBlockAssociation:
   Exclude:
     - "**/spec/**/*"
-
-Style/AccessorGrouping:
-  Enabled: false
-
 Layout/SpaceBeforeComma:
   Enabled: false
-# My Preferences - End

@@ -9,6 +9,7 @@ module KDoc
     include KDoc::Taggable
     include KDoc::Datum
     include KDoc::BlockProcessor
+    include KDoc::Importable
 
     attr_reader :opts
 
@@ -24,6 +25,7 @@ module KDoc
 
       initialize_tag(opts)
       initialize_data(opts)
+      initialize_import(opts) if respond_to?(:initialize_import)
       initialize_block(opts, &block)
     end
 
@@ -36,7 +38,8 @@ module KDoc
     end
 
     def debug
-      debug_container
+      debug_taggable
+      debug_block_processor
       debug_errors
     end
 
