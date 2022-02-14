@@ -56,8 +56,7 @@ Style/EmptyMethod:
   Exclude:
     - "**/spec/**/*"
 Style/OpenStructUse:
-  Exclude:
-    - "**/spec/**/*"
+  Enabled: false
 Metrics/ClassLength:
   Enabled: false
 Metrics/ModuleLength:

@@ -33,6 +33,10 @@ module KDoc
       end
     end
 
+    def imports
+      parent.imports
+    end
+
     # Return these settings which are attached to a data container using :key
     # internal_data is a bad name, but it is unlikely to interfere with any setting names
     # Maybe I rename this to raw_data
