@@ -9,8 +9,11 @@ module KDoc
     include KDoc::Taggable
     include KDoc::Datum
     include KDoc::BlockProcessor
-    include KDoc::Importable
 
+    # OpenStruct to be populated with context data, this can be used inside the on_init
+    attr_reader :context
+
+    # Opts that are passed to the container. Some options will be removed when evaluated by different plugins (Taggable, BlockProcessor)
     attr_reader :opts
 
     # TODO: Owner/Owned need to be in a module and tested
@@ -21,11 +24,11 @@ module KDoc
     end
 
     def initialize(**opts, &block)
+      @context = OpenStruct.new
       @opts = opts
 
       initialize_tag(opts)
       initialize_data(opts)
-      initialize_import(opts)
       initialize_block(opts, &block)
     end
 

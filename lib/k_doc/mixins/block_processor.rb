@@ -8,9 +8,13 @@ module KDoc
     attr_accessor :block
     attr_accessor :block_state
 
-    def initialize_block(_opts, &block)
+    # Proc/Handler to be called before evaluating when importing data
+    attr_reader :on_init
+
+    def initialize_block(opts, &block)
       @block = block if block_given?
-      @block_state = :initial
+      @block_state = :new
+      @on_init = opts.delete(:on_init)
     end
 
     def evaluated?
@@ -21,16 +25,31 @@ module KDoc
       @block_state == :actioned
     end
 
-    def execute_block(run_importer: nil, run_actions: nil)
-      run_on_import if run_importer
+    def execute_block(run_actions: nil)
+      run_on_init
+
+      # return unless dependencies_met?
+
       eval_block
       run_on_action if run_actions
     end
 
-    def eval_block
-      return if @block.nil?
+    def run_on_init
+      instance_eval(&on_init) if on_init
 
-      instance_eval(&@block)
+      @block_state = :initialized
+    rescue StandardError => e
+      log.error('Standard error in document on_init')
+      # puts "key #{unique_key}"
+      # puts "file #{KUtil.data.console_file_hyperlink(resource.file, resource.file)}"
+      log.error(e.message)
+      @error = e
+      raise
+    end
+
+    def eval_block
+      instance_eval(&block) if block
+
       @block_state = :evaluated
     rescue StandardError => e
       log.error('Standard error in document')
@@ -42,7 +61,7 @@ module KDoc
     end
 
     def run_on_action
-      return if @block.nil?
+      return unless block
 
       if respond_to?(:on_action)
         on_action

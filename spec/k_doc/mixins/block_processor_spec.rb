@@ -5,9 +5,11 @@ require 'spec_helper'
 class TestBlock
   include KDoc::BlockProcessor
 
+  attr_reader :context
   attr_reader :some_data
 
   def initialize(**opts, &block)
+    @context = OpenStruct.new
     @some_data = { x: :men }
     initialize_block(opts, &block)
   end
@@ -41,6 +43,13 @@ RSpec.describe KDoc::BlockProcessor do
     end
 
     context 'when block_given?' do
+      let(:opts) do
+        {
+          on_init: proc do
+            context.some_data = :xmen
+          end
+        }
+      end
       let(:instance) do
         described_class.new(**opts) do
           @some_data = { y: :men }
@@ -63,7 +72,27 @@ RSpec.describe KDoc::BlockProcessor do
       describe '.block_state' do
         subject { instance.block_state }
 
-        it { is_expected.to eq(:initial) }
+        it { is_expected.to eq(:new) }
+      end
+
+      context 'before run_on_init' do
+        describe '.context.some_data' do
+          subject { instance.context.some_data }
+
+          it { is_expected.to be_nil }
+
+          context 'after run_on_init' do
+            before { instance.run_on_init }
+
+            it { is_expected.to eq(:xmen) }
+
+            describe '.block_state' do
+              subject { instance.block_state }
+
+              it { is_expected.to eq(:initialized) }
+            end
+          end
+        end
       end
 
       describe '.some_data' do

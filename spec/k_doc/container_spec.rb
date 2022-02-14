@@ -44,6 +44,12 @@ RSpec.describe KDoc::Container do
         it { is_expected.to eq({}) }
       end
 
+      describe '.context' do
+        subject { instance.context }
+
+        it { is_expected.to be_a(OpenStruct) }
+      end
+
       context 'with custom data option' do
         let(:data) { { thunderbirds: :are_go } }
 
@@ -84,7 +90,7 @@ RSpec.describe KDoc::Container do
         subject { instance.data }
 
         let(:instance) do
-          described_class.new do
+          described_class.new on_init: proc { context.some_data = :xmen } do
             @data = 'executed'
             def on_action
               @data = 'action has run'
@@ -95,9 +101,14 @@ RSpec.describe KDoc::Container do
         context 'when execute_block' do
           before { instance.execute_block }
           it { is_expected.to eq('executed') }
+
+          context 'context should initialize' do
+            subject { instance.context.some_data }
+            it { is_expected.to eq(:xmen) }
+          end
         end
 
-        context 'when execute_block' do
+        context 'when execute_block and run_action' do
           before { instance.execute_block(run_actions: true) }
           it { is_expected.to eq('action has run') }
         end
