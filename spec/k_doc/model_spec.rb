@@ -120,7 +120,11 @@ RSpec.describe KDoc::Model do
 
   describe 'configure settings' do
     context 'default DI/IOC class' do
-      subject { instance.settings }
+      subject do
+        instance.settings do
+          puts 'put settings definition DSL here'
+        end
+      end
 
       it { expect(subject).to be_a(KDoc::Settings) }
     end
@@ -245,7 +249,11 @@ RSpec.describe KDoc::Model do
     before { instance.execute_block }
 
     context 'default DI/IOC class' do
-      subject { instance.table }
+      subject do
+        instance.table do
+          puts 'put table definition DSL here'
+        end
+      end
 
       it { expect(subject).to be_a(KDoc::Table) }
     end

@@ -23,6 +23,12 @@ module KDoc
 
     # Need to look at Director as an alternative to this technique
     def settings(key = nil, **setting_opts, &block)
+      # TODO: add test
+      if block.nil?
+        log.warn 'You cannot call settings without a block. Did you mean to call data[:settings] or odata.settings?'
+        return
+      end
+
       setting_opts ||= {}
 
       setting_opts = {}.merge(opts) # Container options
@@ -34,6 +40,11 @@ module KDoc
     end
 
     def table(key = :table, **opts, &block)
+      if block.nil?
+        log.warn 'You cannot call table without a block. Did you mean to call data[:table] or odata.table?'
+        return
+      end
+
       # NEED to add support for run_decorators I think
       opts.merge(parent: self)
       table_instance(data, key, **opts, &block)

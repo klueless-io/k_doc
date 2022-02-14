@@ -25,7 +25,7 @@ module KDoc
 
       initialize_tag(opts)
       initialize_data(opts)
-      initialize_import(opts) if respond_to?(:initialize_import)
+      initialize_import(opts)
       initialize_block(opts, &block)
     end
 
@@ -35,6 +35,10 @@ module KDoc
 
     def default_data_type
       @default_data_type ||= Hash
+    end
+
+    def os(**opts)
+      OpenStruct.new(opts)
     end
 
     def debug
