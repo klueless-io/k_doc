@@ -20,6 +20,10 @@ module KDoc
       run_decorators(:update_rows)
     end
 
+    def imports
+      parent.imports
+    end
+
     # Pass fields in using the following format
     #   fields :name, f(:type, :string), :db_type
     #

@@ -21,7 +21,8 @@ module KDoc
       @block_state == :actioned
     end
 
-    def execute_block(run_actions: nil)
+    def execute_block(run_importer: nil, run_actions: nil)
+      run_on_import if run_importer
       eval_block
       run_on_action if run_actions
     end
