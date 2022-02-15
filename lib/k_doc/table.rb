@@ -20,8 +20,8 @@ module KDoc
       run_decorators(:update_rows)
     end
 
-    def imports
-      parent.imports
+    def context
+      parent.context
     end
 
     # Pass fields in using the following format
