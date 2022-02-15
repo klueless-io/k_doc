@@ -33,8 +33,8 @@ module KDoc
       end
     end
 
-    def imports
-      parent.imports
+    def context
+      parent.context
     end
 
     # Return these settings which are attached to a data container using :key
@@ -58,7 +58,7 @@ module KDoc
       # puts "args.length   : #{args.length}"
 
       if name != :type && !@parent.nil? && @parent.respond_to?(name)
-        puts "NAME: #{name}"
+        puts "Settings.method_missing - NAME: #{name}"
         return @parent.public_send(name, *args, &block)
       end
       raise KDoc::Error, 'Multiple setting values is not supported' if args.length > 1
