@@ -59,7 +59,7 @@ RSpec.describe KDoc::CsvDoc do
         end
       end
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       describe '.file' do
         subject { instance.file }
@@ -85,7 +85,7 @@ RSpec.describe KDoc::CsvDoc do
         end
       end
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       context '.data' do
         subject { instance.data }

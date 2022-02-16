@@ -59,7 +59,7 @@ RSpec.describe KDoc::YamlDoc do
       end
       let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       describe '.file' do
         subject { instance.file }
@@ -86,7 +86,7 @@ RSpec.describe KDoc::YamlDoc do
       end
       let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       context '.data' do
         subject { instance.data }
@@ -129,7 +129,7 @@ RSpec.describe KDoc::YamlDoc do
       end
       let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       describe '.file' do
         subject { instance.file }
@@ -156,7 +156,7 @@ RSpec.describe KDoc::YamlDoc do
       end
       let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       context '.data' do
         subject { instance.data }
