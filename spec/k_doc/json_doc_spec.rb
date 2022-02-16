@@ -54,12 +54,17 @@ RSpec.describe KDoc::JsonDoc do
     context 'when loaded' do
       let(:instance) do
         described_class.new(file: file, data: { zzz: :yyy }) do
-          load
+          init do
+            load
+          end
         end
       end
       let(:sample_data) { JSON.parse(File.read(file)) }
 
-      before { instance.fire_eval }
+      before do
+        instance.fire_eval
+        instance.fire_init
+      end
 
       describe '.file' do
         subject { instance.file }
@@ -81,12 +86,17 @@ RSpec.describe KDoc::JsonDoc do
     context 'when loaded using data_action: :append' do
       let(:instance) do
         described_class.new(file: file, data: { zzz: :yyy }) do
-          load(data_action: :append)
+          init do
+            load(data_action: :append)
+          end
         end
       end
       let(:sample_data) { JSON.parse(File.read(file)) }
 
-      before { instance.fire_eval }
+      before do
+        instance.fire_eval
+        instance.fire_init
+      end
 
       context '.data' do
         subject { instance.data }
