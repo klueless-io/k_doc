@@ -59,7 +59,7 @@ RSpec.describe KDoc::JsonDoc do
       end
       let(:sample_data) { JSON.parse(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       describe '.file' do
         subject { instance.file }
@@ -86,7 +86,7 @@ RSpec.describe KDoc::JsonDoc do
       end
       let(:sample_data) { JSON.parse(File.read(file)) }
 
-      before { instance.eval_block }
+      before { instance.fire_eval }
 
       context '.data' do
         subject { instance.data }

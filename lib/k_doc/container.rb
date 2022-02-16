@@ -29,7 +29,7 @@ module KDoc
 
       initialize_tag(opts)
       initialize_data(opts)
-      initialize_block(opts, &block)
+      initialize_block_processor(opts, &block)
     end
 
     def default_container_type

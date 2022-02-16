@@ -90,9 +90,12 @@ RSpec.describe KDoc::Container do
         subject { instance.data }
 
         let(:instance) do
-          described_class.new on_init: proc { context.some_data = :xmen } do
+          described_class.new do
             @data = 'executed'
-            def on_action
+            init do
+              context.some_data = :xmen
+            end
+            action do
               @data = 'action has run'
             end
           end
