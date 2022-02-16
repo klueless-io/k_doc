@@ -409,44 +409,6 @@ RSpec.describe KDoc::BlockProcessor do
           it { is_expected.to eq(:set_during_init) }
         end
       end
-
-      # xdescribe '.some_data' do
-      #   subject { instance.some_data }
-
-      #   context 'before fire_eval' do
-      #     it { is_expected.to eq({ x: :men }) }
-
-      #     context 'after fire_eval' do
-      #       before { instance.fire_eval }
-
-      #       it { is_expected.to eq({ y: :men }) }
-
-      #       it { expect(instance).to be_evaluated }
-      #       it { expect(instance).not_to be_actioned }
-
-      #       describe '.block_state' do
-      #         subject { instance.block_state }
-
-      #         it { is_expected.to eq(:evaluated) }
-      #       end
-
-      #       context 'after run_on_action' do
-      #         before { instance.run_on_action }
-
-      #         it { is_expected.to eq({ z: :men }) }
-
-      #         it { expect(instance).to be_evaluated }
-      #         it { expect(instance).to be_actioned }
-
-      #         describe '.block_state' do
-      #           subject { instance.block_state }
-
-      #           it { is_expected.to eq(:actioned) }
-      #         end
-      #       end
-      #     end
-      #   end
-      # end
     end
   end
 end
