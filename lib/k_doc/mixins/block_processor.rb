@@ -24,7 +24,7 @@ module KDoc
 
     attr_reader :init_block
     attr_reader :action_block
-    attr_reader :child_blocks
+    attr_reader :children
 
     def initialize_block_processor(_opts, &block)
       @block = block if block_given?
@@ -32,7 +32,7 @@ module KDoc
 
       @init_block = nil
       @action_block = nil
-      @child_blocks = []
+      @children = []
     end
 
     def execute_block(run_actions: false)
@@ -43,7 +43,7 @@ module KDoc
       fire_init
 
       # Call the each block in the child array of blocks in the order of creation (FIFO)
-      fire_children_eval
+      fire_children
 
       # Call the block of code attached to the action method
       fire_action if run_actions
@@ -109,14 +109,27 @@ module KDoc
     end
 
     def add_child(block)
-      @child_blocks << block
+      @children << block
     end
 
-    def fire_children_eval
+    # Run blocks associated with the children
+    #
+    # A child can follow one of three patterns:
+    # 1. A block that is evaluated immediately against the parent class
+    # 2. A class that has its own custom block evaluation
+    # 3. A class that has a block which will be evaluated immediately against the child class
+    # rubocop:disable Metrics/AbcSize
+    def fire_children
       return unless initialized?
 
-      child_blocks.each do |block|
-        instance_eval(&block)
+      children.each do |child|
+        if child.is_a?(Proc)
+          instance_eval(&child)
+        elsif child.respond_to?(:fire_eval)
+          child.fire_eval
+        elsif child.respond_to?(:block)
+          child.instance_eval(&child.block)
+        end
       end
 
       @block_state = :children_evaluated
@@ -128,6 +141,7 @@ module KDoc
       @error = e
       raise
     end
+    # rubocop:enable Metrics/AbcSize
 
     def action(&block)
       @action_block = block

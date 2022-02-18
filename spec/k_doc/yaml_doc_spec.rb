@@ -51,53 +51,53 @@ RSpec.describe KDoc::YamlDoc do
       end
     end
 
-    context 'when loaded' do
-      let(:instance) do
-        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
-          load
+    context 'when load is called from the main block (fire_eval is enough)' do
+      context 'when load' do
+        let(:instance) do
+          described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
+            load
+          end
+        end
+        let(:sample_data) { YAML.safe_load(File.read(file)) }
+
+        before do
+          instance.fire_eval
+        end
+
+        describe '.file' do
+          subject { instance.file }
+
+          it { is_expected.to eq(file) }
+        end
+        describe '.loaded?' do
+          subject { instance.loaded? }
+
+          it { is_expected.to be_truthy }
+        end
+        context '.data' do
+          subject { instance.data }
+
+          it { is_expected.to eq(sample_data) }
         end
       end
-      let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before do
-        instance.fire_eval
-        instance.fire_init
-      end
-
-      describe '.file' do
-        subject { instance.file }
-
-        it { is_expected.to eq(file) }
-      end
-      describe '.loaded?' do
-        subject { instance.loaded? }
-
-        it { is_expected.to be_truthy }
-      end
-      context '.data' do
-        subject { instance.data }
-
-        it { is_expected.to eq(sample_data) }
-      end
-    end
-
-    context 'when loaded using data_action: :append' do
-      let(:instance) do
-        described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
-          load(data_action: :append)
+      context 'when loaded using data_action: :append' do
+        let(:instance) do
+          described_class.new(file: file, data: [{ zzz: :yyy }], default_data_type: Array) do
+            load(data_action: :append)
+          end
         end
-      end
-      let(:sample_data) { YAML.safe_load(File.read(file)) }
+        let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before do
-        instance.fire_eval
-        instance.fire_init
-      end
+        before do
+          instance.fire_eval
+        end
 
-      context '.data' do
-        subject { instance.data }
+        context '.data' do
+          subject { instance.data }
 
-        it { is_expected.to eq([{ zzz: :yyy }] + sample_data) }
+          it { is_expected.to eq([{ zzz: :yyy }] + sample_data) }
+        end
       end
     end
   end
@@ -127,59 +127,60 @@ RSpec.describe KDoc::YamlDoc do
       end
     end
 
-    context 'when loaded' do
-      let(:instance) do
-        described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
-          load
+    context 'when loading using the init hook (fire_eval and fire_init is required)' do
+      context 'when loaded' do
+        let(:instance) do
+          described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
+            init do
+              load
+            end
+          end
+        end
+        let(:sample_data) { YAML.safe_load(File.read(file)) }
+
+        before do
+          instance.fire_eval
+          instance.fire_init
+        end
+
+        describe '.file' do
+          subject { instance.file }
+
+          it { is_expected.to eq(file) }
+        end
+        describe '.loaded?' do
+          subject { instance.loaded? }
+
+          it { is_expected.to be_truthy }
+        end
+        context '.data' do
+          subject { instance.data }
+
+          it { is_expected.to eq(sample_data) }
         end
       end
-      let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before do
-        instance.fire_eval
-        instance.fire_init
-      end
-
-      describe '.file' do
-        subject { instance.file }
-
-        it { is_expected.to eq(file) }
-      end
-      describe '.loaded?' do
-        subject { instance.loaded? }
-
-        it { is_expected.to be_truthy }
-      end
-      context '.data' do
-        subject { instance.data }
-
-        it { is_expected.to eq(sample_data) }
-      end
-    end
-
-    context 'when loaded using data_action: :append' do
-      let(:instance) do
-        described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
-          load(data_action: :append)
+      context 'when loaded using data_action: :append' do
+        let(:instance) do
+          described_class.new(file: file, data: { zzz: :yyy }, default_data_type: Hash) do
+            init do
+              load(data_action: :append)
+            end
+          end
         end
-      end
-      let(:sample_data) { YAML.safe_load(File.read(file)) }
+        let(:sample_data) { YAML.safe_load(File.read(file)) }
 
-      before do
-        instance.fire_eval
-        instance.fire_init
-      end
+        before do
+          instance.fire_eval
+          instance.fire_init
+        end
 
-      context '.data' do
-        subject { instance.data }
+        context '.data' do
+          subject { instance.data }
 
-        it { is_expected.to eq({ zzz: :yyy }.merge(sample_data)) }
+          it { is_expected.to eq({ zzz: :yyy }.merge(sample_data)) }
+        end
       end
     end
   end
 end
-# it do
-#   is_expected
-#     .to include({ 'martin' => { 'name' => 'David', 'job' => 'Developer', 'skills' => %w[python perl pascal] } })
-#     .and include({ 'tabitha' => { 'name' => 'Jin', 'job' => 'Developer', 'skills' => %w[lisp fortran erlang] } })
-# end
