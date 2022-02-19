@@ -60,6 +60,7 @@ RSpec.describe KDoc::Settings do
       described_class.new(parent, data, :app_settings) do
         rails_port           3000
         active               true
+        inactive             false
         model                'AdminUser'
         main_key             'email'
         note                 'password is an alias to encrypted_password'
@@ -72,14 +73,15 @@ RSpec.describe KDoc::Settings do
 
       it { is_expected.to eq('app_settings' => {}) }
 
-      context 'after eval_block' do
-        before { instance.eval_block }
+      context 'after fire_eval' do
+        before { instance.fire_eval }
 
         it do
           is_expected.to eq('app_settings' =>
             {
               'rails_port' => 3000,
               'active' => true,
+              'inactive' => false,
               'model' => 'AdminUser',
               'main_key' => 'email',
               'note' => 'password is an alias to encrypted_password',
@@ -106,8 +108,8 @@ RSpec.describe KDoc::Settings do
       it { is_expected.not_to respond_to(:the) }
       it { is_expected.not_to respond_to(:the=) }
 
-      context 'after eval_block' do
-        before { instance.eval_block }
+      context 'after fire_eval' do
+        before { instance.fire_eval }
 
         it do
           is_expected.to respond_to(:the)
@@ -129,8 +131,8 @@ RSpec.describe KDoc::Settings do
       end
     end
 
-    context 'after eval_block' do
-      before { instance.eval_block }
+    context 'after fire_eval' do
+      before { instance.fire_eval }
 
       it 'will have valid value' do
         expect(subject.my_get1).to eq('quick')
@@ -172,8 +174,8 @@ RSpec.describe KDoc::Settings do
       end
     end
 
-    context 'after eval_block' do
-      before { instance.eval_block }
+    context 'after fire_eval' do
+      before { instance.fire_eval }
 
       it 'will have valid value' do
         expect(subject.get_value(:rails_port)).to eq(3000)
@@ -194,7 +196,7 @@ RSpec.describe KDoc::Settings do
       end
     end
 
-    before { instance.eval_block }
+    before { instance.fire_eval }
 
     context 'when using :symbol key' do
       it { expect(subject.get_value(:rails_port)).to eq(3000) }
