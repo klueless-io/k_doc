@@ -192,7 +192,7 @@ RSpec.describe KDoc::Table do
   end
 
   context 'after block_eval' do
-    before { instance.eval_block }
+    before { instance.fire_eval }
 
     describe '#get_fields' do
       subject { instance.get_fields }
@@ -481,12 +481,12 @@ RSpec.describe KDoc::Table do
         end
       end
 
-      it { expect { instance.eval_block }.to raise_error(KType::Error, 'To many values for row, argument 2') }
+      it { expect { instance.fire_eval }.to raise_error(KType::Error, 'To many values for row, argument 2') }
     end
   end
 
   describe '#find_row' do
-    before { instance.eval_block }
+    before { instance.fire_eval }
 
     let(:instance) do
       described_class.new(parent, data) do

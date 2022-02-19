@@ -19,7 +19,7 @@ module KDoc
       @block = block
     end
 
-    def eval_block
+    def fire_eval
       return unless block
 
       instance_eval(&block)

@@ -84,6 +84,11 @@ module KDoc
 
       raise KDoc::Error, "Node not found: #{node_name}" if node_data.nil?
 
+      if node_data.is_a?(Array)
+        puts 'why is this?'
+        return nil
+      end
+
       if node_data.keys.length == 2 && (node_data.key?('fields') && node_data.key?('rows'))
         :table
       else
