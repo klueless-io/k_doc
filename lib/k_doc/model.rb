@@ -23,20 +23,18 @@ module KDoc
 
     # Need to look at Director as an alternative to this technique
     def settings(key = nil, **setting_opts, &block)
-      # TODO: add test
       if block.nil?
         log.warn 'You cannot call settings without a block. Did you mean to call data[:settings] or odata.settings?'
         return
       end
 
-      setting_opts ||= {}
-
-      setting_opts = {}.merge(opts) # Container options
+      setting_opts = {}.merge(opts)         # Container options
                        .merge(setting_opts) # Settings setting_opts
                        .merge(parent: self)
 
-      settings_instance(data, key, **setting_opts, &block)
-      # settings.run_decorators(opts)
+      child = KDoc::Settings.new(self, data, key, **setting_opts, &block)
+
+      add_child(child)
     end
 
     def table(key = :table, **opts, &block)
@@ -45,9 +43,9 @@ module KDoc
         return
       end
 
-      # NEED to add support for run_decorators I think
-      opts.merge(parent: self)
-      table_instance(data, key, **opts, &block)
+      child = KDoc::Table.new(self, data, key, **opts, &block)
+
+      add_child(child)
     end
     alias rows table
 
@@ -85,6 +83,11 @@ module KDoc
       node_data = data[node_name]
 
       raise KDoc::Error, "Node not found: #{node_name}" if node_data.nil?
+
+      if node_data.is_a?(Array)
+        puts 'why is this?'
+        return nil
+      end
 
       if node_data.keys.length == 2 && (node_data.key?('fields') && node_data.key?('rows'))
         :table
@@ -137,16 +140,6 @@ module KDoc
       opts&.keys&.reject { |k| k == :namespace }&.each do |key|
         log.kv key, opts[key]
       end
-    end
-
-    private
-
-    def settings_instance(data, key, **opts, &block)
-      KDoc.opinion.settings_class.new(data, key, **opts, &block)
-    end
-
-    def table_instance(data, key, **opts, &block)
-      KDoc.opinion.table_class.new(data, key, **opts, &block)
     end
   end
 end

@@ -52,578 +52,214 @@ RSpec.describe KDoc::Model do
     it { is_expected.to eq(KDoc.opinion.default_model_type) }
   end
 
-  describe '#get_node_type' do
-    # subject { instance.data}
-
-    before { instance.execute_block }
+  context '.data' do
+    subject { instance }
 
     let(:block) do
       lambda do |_|
+        init do
+          context.xmen = 'Wolverine'
+        end
+
         settings do
-          # Some settings with the key: :settings
+          name 'Some name'
+          description 'Some description'
         end
 
         settings :key_values do
+          favourite_mutant context.xmen
           # Some settings with the key: :key_values
         end
 
         table do
-          # A table under with the name: :table
+          fields :role
+
+          row :owner
+          row :staff
         end
 
-        table :custom do
+        table :people do
           # A table under with the name: :custom
+          fields f(:first_name), f(:role, :symbol, :staff)
+
+          row 'David', :staff
+          row 'Ben', :staff
+          row context.xmen, :owner
         end
       end
     end
 
-    it { expect { subject.get_node_type(:xmen) }.to raise_error(KDoc::Error) }
-    it { expect(subject.get_node_type(:settings)).to eq(:settings) }
-    it { expect(subject.get_node_type('settings')).to eq(:settings) }
-    it { expect(subject.get_node_type('key_values')).to eq(:settings) }
-    it { expect(subject.get_node_type('table')).to eq(:table) }
-    it { expect(subject.get_node_type('custom')).to eq(:table) }
-  end
+    context 'after fire_eval' do
+      before do
+        instance.fire_eval
+      end
 
-  describe '.raw_data' do
-    subject { instance.raw_data }
+      context '.context' do
+        it { expect(subject.context).to be_a(OpenStruct) }
 
-    before { instance.execute_block }
+        it { expect(subject.context.xmen).to be_nil }
+      end
 
-    let(:block) do
-      lambda do |_|
-        settings do
-          # Some settings under :settings
+      context '.settings blocks should be initialized' do
+        it 'default block data filled in' do
+          expect(subject.data['settings']).to eq({})
+          expect(subject.data['key_values']).to eq({})
+          expect(subject.data['table']).to eq({ 'fields' => [], 'rows' => [] })
+          expect(subject.data['people']).to eq({ 'fields' => [], 'rows' => [] })
         end
 
-        settings :key_values do
-          # Some settings under :key_values
+        context 'check data' do
+          subject { instance.data[key.to_s] }
+          context 'when settings' do
+            let(:key) { :settings }
+            it { is_expected.to eq({}) }
+          end
+          context 'when key_values' do
+            let(:key) { :key_values }
+            it { is_expected.to eq({}) }
+          end
+          context 'when table' do
+            let(:key) { :table }
+            it { is_expected.to eq({ 'fields' => [], 'rows' => [] }) }
+          end
+          context 'when people' do
+            let(:key) { :people }
+            it { is_expected.to eq({ 'fields' => [], 'rows' => [] }) }
+          end
+          context 'raise error when unknown' do
+            let(:key) { :unknown }
+            it { is_expected.to be_nil }
+          end
         end
 
-        table do
-          # A table under :table
-        end
+        context 'check node_type' do
+          subject { instance.get_node_type(key) }
+          context 'when using default settings key' do
+            let(:key) { :settings }
+            it { is_expected.to eq(:settings) }
+          end
+          context 'when using settings with custom key' do
+            let(:key) { :key_values }
+            it { is_expected.to eq(:settings) }
+          end
+          context 'when using default table key' do
+            let(:key) { :table }
+            it { is_expected.to eq(:table) }
+          end
+          context 'when using table with custom key' do
+            let(:key) { :people }
+            it { is_expected.to eq(:table) }
+          end
 
-        table :custom do
-          # A table under :custom
+          context 'raise error when node_type is unknown' do
+            let(:key) { :unknown }
+            it { expect { subject }.to raise_error(KDoc::Error) }
+          end
         end
       end
     end
 
-    # Data: Includes Meta, eg. fields
-    # {"settings"=>{}, "key_values"=>{}, "table"=>{"fields"=>[], "rows"=>[]}, "custom"=>{"fields"=>[], "rows"=>[]}}
+    context 'after fire_eval -> fire_init' do
+      before do
+        instance.fire_eval
+        instance.fire_init
+      end
 
-    # RawData: Excludes Meta
-    # {"settings"=>{}, "key_values"=>{}, "table"=>{"rows"=>[]}, "custom"=>{"rows"=>[]}}
-    it { is_expected.to eq({ 'settings' => {}, 'key_values' => {}, 'table' => [], 'custom' => [] }) }
-  end
+      context '.context' do
+        it { expect(subject.context.xmen).to eq('Wolverine') }
+      end
 
-  describe 'configure settings' do
-    context 'default DI/IOC class' do
-      subject do
-        instance.settings do
-          puts 'put settings definition DSL here'
+      context '.settings blocks' do
+        context 'check data' do
+          subject { instance.data[key.to_s] }
+          context 'when settings' do
+            let(:key) { :settings }
+            it { is_expected.to eq({}) }
+          end
+          context 'when key_values' do
+            let(:key) { :key_values }
+            it { is_expected.to eq({}) }
+          end
         end
       end
 
-      it { expect(subject).to be_a(KDoc::Settings) }
-    end
-
-    context '.data' do
-      subject { instance.data }
-
-      before { instance.execute_block }
-
-      context 'setting groups' do
-        context 'with default name' do
-          let(:block) do
-            lambda do |_|
-              settings do
-                # Some settings with the key: :settings
-              end
-            end
+      context '.tables blocks' do
+        context 'check data' do
+          subject { instance.data[key.to_s] }
+          context 'when table' do
+            let(:key) { :table }
+            it { is_expected.to eq({ 'fields' => [], 'rows' => [] }) }
           end
-
-          it { is_expected.to eq('settings' => {}) }
-        end
-
-        context 'with custom name' do
-          let(:block) do
-            lambda do |_|
-              settings :key_values do
-                # Some settings with the key: :key_values
-              end
-            end
-          end
-
-          it { is_expected.to eq('key_values' => {}) }
-        end
-
-        context 'with multiple groups' do
-          let(:block) do
-            lambda do |_|
-              settings do
-                # Some settings with the key: :key_values
-              end
-              settings :key_values do
-                # Some settings with the key: :key_values
-              end
-              settings :name_values do
-                # Some settings with the key: :name_values
-              end
-            end
-          end
-
-          it { is_expected.to eq('settings' => {}, 'key_values' => {}, 'name_values' => {}) }
-        end
-      end
-
-      context 'setting key/values' do
-        let(:block) do
-          lambda do |_|
-            settings do
-              model             'user'
-              rails_port        3000
-              active            true
-            end
+          context 'when people' do
+            let(:key) { :people }
+            it { is_expected.to eq({ 'fields' => [], 'rows' => [] }) }
           end
         end
-
-        it do
-          is_expected.to eq('settings' =>
-            {
-              'model' => 'user',
-              'rails_port' => 3000,
-              'active' => true
-            })
-        end
-
-        # context 'with decorators - sample 1' do
-        #   let(:block) do
-        #     lambda do |_|
-        #       settings decorators: [Pluralizer, :uppercase] do
-        #         model             'user'
-        #         rails_port        3000
-        #         active            true
-        #       end
-        #     end
-        #   end
-
-        #   it do
-        #     is_expected.to eq('settings' =>
-        #       {
-        #         'model' => 'USER',
-        #         'model_plural' => 'USERS',
-        #         'rails_port' => 3000,
-        #         'active' => true
-        #       })
-        #   end
-        # end
-
-        # context 'with decorators - sample 2' do
-        #   let(:block) do
-        #     lambda do |_|
-        #       settings decorators: [AlterKeyValues, AlterStructure] do
-        #         first_name 'David'
-        #         last_name 'Cruwys'
-        #         age 40
-        #       end
-        #     end
-        #   end
-
-        #   it do
-        #     is_expected.to eq('settings' =>
-        #       {
-        #         'first_name' => 'Davo',
-        #         'last_name' => 'The Great',
-        #         'funny_name' => 'davo the great',
-        #         'age' => 40
-        #       })
-        #   end
-        # end
       end
     end
-  end
 
-  describe 'configure table' do
-    before { instance.execute_block }
-
-    context 'default DI/IOC class' do
-      subject do
-        instance.table do
-          puts 'put table definition DSL here'
-        end
+    context 'after fire_eval -> fire_init -> fire_children' do
+      before do
+        instance.fire_eval
+        instance.fire_init
+        instance.fire_children
       end
 
-      it { expect(subject).to be_a(KDoc::Table) }
-    end
+      context '.context' do
+        it { expect(subject.context.xmen).to eq('Wolverine') }
+      end
 
-    context '.data' do
-      subject { instance.data }
-
-      context 'table groups' do
-        context 'with default key' do
-          let(:block) do
-            lambda do |_|
-              table do
-                # A table under the name: :table
-              end
+      context '.settings blocks' do
+        context 'check data' do
+          subject { instance.data[key.to_s] }
+          context 'when settings' do
+            let(:key) { :settings }
+            it do
+              is_expected.to eq(
+                {
+                  'description' => 'Some description',
+                  'name' => 'Some name'
+                }
+              )
             end
           end
-
-          it { is_expected.to eq('table' => { 'fields' => [], 'rows' => [] }) }
-        end
-
-        context 'with custom key' do
-          let(:block) do
-            lambda do |_|
-              table :custom do
-                # A table under the name: :custom
-              end
-            end
-          end
-
-          it { is_expected.to eq('custom' => { 'fields' => [], 'rows' => [] }) }
-        end
-
-        context 'with multiple tables' do
-          let(:block) do
-            lambda do |_|
-              table do
-                # A table under the name: :table
-              end
-
-              table :table2 do
-                # A table under the name: :table2
-              end
-
-              table :table3 do
-                # A table under the name: :table3
-              end
-            end
-          end
-
-          it do
-            is_expected.to eq({
-                                'table' => { 'fields' => [], 'rows' => [] },
-                                'table2' => { 'fields' => [], 'rows' => [] },
-                                'table3' => { 'fields' => [], 'rows' => [] }
-                              })
+          context 'when key_values' do
+            let(:key) { :key_values }
+            it { is_expected.to eq({ 'favourite_mutant' => 'Wolverine' }) }
           end
         end
       end
 
-      context 'table rows' do
-        let(:block) do
-          lambda do |_|
-            table do
-              fields :column1, :column2, f(:column3, false), f(:column4, default: 'CUSTOM VALUE')
-
-              row 'row1-c1', 'row1-c2', true, 'row1-c4'
-              row
-            end
-
-            table :another_table do
-              fields %w[column1 column2]
-
-              row column1: 'david'
-              row column2: 'cruwys'
+      context '.tables blocks' do
+        context 'check data' do
+          subject { instance.data[key.to_s] }
+          context 'when table' do
+            let(:key) { :table }
+            it do
+              is_expected.to eq({
+                                  'fields' => [{ 'name' => 'role', 'type' => 'string', 'default' => nil }],
+                                  'rows' => [{ 'role' => :owner }, { 'role' => :staff }]
+                                })
             end
           end
-        end
-
-        it 'multiple row groups, multiple rows and positional and key/valued data' do
-          is_expected.to eq({
-                              'table' => {
-                                'fields' => [
-                                  { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-                                  { 'name' => 'column2', 'type' => 'string', 'default' => nil },
-                                  { 'name' => 'column3', 'type' => 'string', 'default' => false },
-                                  { 'name' => 'column4', 'type' => 'string', 'default' => 'CUSTOM VALUE' }
-                                ],
-                                'rows' => [
-                                  { 'column1' => 'row1-c1', 'column2' => 'row1-c2', 'column3' => true , 'column4' => 'row1-c4' },
-                                  { 'column1' => nil, 'column2' => nil, 'column3' => false, 'column4' => 'CUSTOM VALUE' }
-                                ]
-                              },
-                              'another_table' => {
-                                'fields' => [
-                                  { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-                                  { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-                                ],
-                                'rows' => [
-                                  { 'column1' => 'david', 'column2' => nil },
-                                  { 'column1' => nil, 'column2' => 'cruwys' }
-                                ]
-                              }
-                            })
+          context 'when people' do
+            let(:key) { :people }
+            it do
+              is_expected.to eq({
+                                  'fields' => [
+                                    { 'name' => 'first_name', 'type' => 'string', 'default' => nil },
+                                    { 'name' => 'role', 'type' => 'staff', 'default' => 'symbol' }
+                                  ],
+                                  'rows' => [
+                                    { 'first_name' => 'David', 'role' => :staff },
+                                    { 'first_name' => 'Ben', 'role' => :staff },
+                                    { 'first_name' => 'Wolverine', 'role' => :owner }
+                                  ]
+                                })
+            end
+          end
         end
       end
     end
   end
-
-  describe '#data_struct' do
-    let(:action) { instance.data_struct }
-
-    before { instance.execute_block }
-
-    context '.settings' do
-      subject { action.settings }
-
-      let(:block) do
-        lambda do |_|
-          settings do
-            a 'A'
-            b 1
-            c true
-            d false
-          end
-        end
-      end
-
-      it { expect(subject).to_not be_nil }
-      it { expect(subject).to have_attributes(a: 'A', b: 1, c: true, d: false) }
-    end
-
-    context '.table' do
-      subject { action.table }
-
-      let(:block) do
-        lambda do |_|
-          table do
-            row c1: 'A', c2: 1
-            row c1: 'B', c2: true
-            row c1: 'C', c2: false
-          end
-        end
-      end
-
-      it { is_expected.to respond_to(:fields) }
-      it { is_expected.to respond_to(:rows) }
-
-      context '.fields' do
-        subject { action.table.fields }
-
-        it { is_expected.to be_empty }
-      end
-
-      context '.rows' do
-        subject { action.table.rows }
-
-        it { is_expected.to include(have_attributes(c1: 'A', c2: 1)) }
-        it { is_expected.to include(have_attributes(c1: 'B', c2: true)) }
-        it { is_expected.to include(have_attributes(c1: 'C', c2: false)) }
-      end
-    end
-
-    context 'complex - rows and settings' do
-      let(:block) do
-        lambda do |_|
-          settings do
-            path '~/somepath'
-          end
-
-          c = settings :contact do
-            first_name 'david'
-            last_name 'cruwys'
-          end
-
-          table do
-            fields :column1, f(:column2, 99, :integer), f(:column3, false, :boolean), f(:column4, default: 'CUSTOM VALUE'), f(:column5, '')
-
-            row 'row1-c1', 66, true, 'row1-c4'
-            row
-          end
-
-          table :another_table do
-            fields %w[column1 column2]
-
-            row column1: c.first_name
-            row column2: c.last_name
-          end
-        end
-      end
-
-      context '#debug' do
-        it { instance.debug(include_header: true) }
-      end
-
-      context '.settings' do
-        subject { action.settings }
-
-        it { expect(subject).to_not be_nil }
-        it { expect(subject).to have_attributes(path: '~/somepath') }
-      end
-
-      context '.contact' do
-        subject { action.contact }
-
-        it { expect(subject).to_not be_nil }
-        it { expect(subject).to have_attributes(first_name: 'david', last_name: 'cruwys') }
-      end
-
-      context '.table' do
-        subject { action.table }
-
-        it { is_expected.to respond_to(:fields) }
-        it { is_expected.to respond_to(:rows) }
-
-        context '.fields' do
-          subject { action.table.fields }
-
-          it { is_expected.not_to be_empty }
-          it { is_expected.to include(have_attributes(name: 'column1', default: nil, type: 'string')) }
-          it { is_expected.to include(have_attributes(name: 'column2', default: 99, type: 'integer')) }
-          it { is_expected.to include(have_attributes(name: 'column3', default: false, type: 'boolean')) }
-          it { is_expected.to include(have_attributes(name: 'column4', default: 'CUSTOM VALUE', type: 'string')) }
-          it { is_expected.to include(have_attributes(name: 'column5', default: '', type: 'string')) }
-        end
-
-        context '.rows' do
-          subject { action.table.rows }
-
-          it { is_expected.to include(have_attributes(column1: 'row1-c1', column2: 66, column3: true, column4: 'row1-c4', column5: '')) }
-          it { is_expected.to include(have_attributes(column1: nil, column2: 99, column3: false, column4: 'CUSTOM VALUE', column5: '')) }
-        end
-      end
-
-      context '.another_table' do
-        subject { action.another_table }
-
-        it { is_expected.to respond_to(:fields) }
-        it { is_expected.to respond_to(:rows) }
-
-        context '.fields' do
-          subject { action.another_table.fields }
-
-          it { is_expected.not_to be_empty }
-          it { is_expected.to include(have_attributes(name: 'column1', default: nil, type: 'string')) }
-          it { is_expected.to include(have_attributes(name: 'column2', default: nil, type: 'string')) }
-        end
-
-        context '.rows' do
-          subject { action.another_table.rows }
-
-          it { is_expected.to include(have_attributes(column1: 'david', column2: nil)) }
-          it { is_expected.to include(have_attributes(column1: nil, column2: 'cruwys')) }
-        end
-      end
-    end
-  end
-
-  # describe 'klue.process_code' do
-
-  #   context 'single document' do
-
-  #     subject {
-  #       Klue.process_code(
-  #         <<-RUBY
-  #     Klue::Dsl::DataDsl.new 'parent' do
-  #       settings do
-  #         first_name      'David'
-  #         last_name       'Cruwys'
-  #       end
-  #     end
-  #         RUBY
-  #       )
-  #     }
-
-  #     let(:parent) { Klue.register_instance.get_data('parent')}
-
-  #     it do
-  #       subject
-  #       expect(parent).to_not be_nil
-  #     end
-  #     it do
-  #       subject
-  #       expect(parent).to eq("settings" => { "first_name"=>"David", "last_name"=>"Cruwys" })
-  #     end
-
-  #   end
-
-  #   context 'multiple documents' do
-
-  #     subject {
-  #       Klue.process_code(
-  #         <<-RUBY
-  #     Klue::Dsl::DataDsl.new 'parent' do
-  #       settings do
-  #         first_name      'David'
-  #         last_name       'Cruwys'
-  #       end
-  #     end
-
-  #     Klue::Dsl::DataDsl.new 'child' do
-  #       settings do
-  #         age      'Old'
-  #         sex      'Male'
-  #       end
-  #     end
-  #       RUBY
-  #       )
-  #     }
-
-  #     let(:parent) { Klue.register_instance.get_data('parent')}
-  #     let(:child) { Klue.register_instance.get_data('child')}
-
-  #     it do
-  #       subject
-  #       expect(parent).to_not be_nil
-  #     end
-
-  #     it do
-  #       subject
-  #       expect(child).to_not be_nil
-  #     end
-
-  #     it do
-  #       subject
-  #       expect(parent).to eq({"settings"=>{"first_name"=>"David", "last_name"=>"Cruwys"}})
-  #     end
-
-  #     it do
-  #       subject
-  #       expect(child).to eq({"settings"=>{"age"=>"Old", "sex"=>"Male"}})
-  #     end
-
-  #   end
-
-  #   context 'multiple documents where child imports from parent' do
-
-  #     subject { Klue.process_code(
-  #     <<-RUBY
-
-  #       Klue::Dsl::DataDsl.new 'parent' do
-  #         settings do
-  #           first_name      'David'
-  #           last_name       'Cruwys'
-  #         end
-  #       end
-
-  #       Klue::Dsl::DataDsl.new 'child' do
-
-  #         p = import('parent')
-
-  #         settings do
-  #           first_name      p.settings.first_name
-  #           last_name       p.settings.last_name
-  #           age      'Old'
-  #           sex      'Male'
-  #         end
-  #       end
-
-  #     RUBY
-  #     ) }
-
-  #     let(:parent) { Klue.register_instance.get_data('parent')}
-  #     let(:child) { Klue.register_instance.get_data('child')}
-
-  #     it { subject; expect(parent).to_not be_nil }
-  #     it { subject; expect(child).to_not be_nil }
-  #     it { subject; expect(parent).to eq({"settings"=>{"first_name"=>"David", "last_name"=>"Cruwys"}}) }
-  #     it { subject; expect(child).to eq({"settings"=>{"first_name"=>"David", "last_name"=>"Cruwys", "age"=>"Old", "sex"=>"Male"}}) }
-
-  #   end
-
-  # end
 end

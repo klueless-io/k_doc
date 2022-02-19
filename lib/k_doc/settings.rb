@@ -1,36 +1,36 @@
 # frozen_string_literal: true
 
-require 'json'
-
 module KDoc
   # Builds up key/value settings from the block
-  # and applies them to a key coded node on the hash
   class Settings
     include KLog::Logging
-    # include KDoc::Decorators
 
     attr_reader :parent
     attr_reader :key
     attr_reader :decorators
+    attr_reader :block
 
-    alias kp parent
+    def initialize(parent, data, key = nil, **opts, &block)
+      @parent = parent
+      @data = data
+      @key = (key || FakeOpinion.new.default_settings_key).to_s
+      @data[@key] = {}
+      @decorators = build_decorators(opts) # TODO: add tests for decorators
+      @block = block
+    end
 
-    def initialize(data, key = nil, **options, &block)
-      initialize_attributes(data, key, **options)
+    def fire_eval
+      return unless block
 
-      # Need a way to find out the line number for errors and report it correctly
-      begin
-        instance_eval(&block) if block_given?
+      instance_eval(&block)
+      run_decorators
 
-        run_decorators
-
-        # rubocop:disable Style/RescueStandardError
-      rescue => e
-        # rubocop:enable Style/RescueStandardError
-        puts "Invalid code block in settings_dsl: #{@key}"
-        puts e.message
-        raise
-      end
+      # rubocop:disable Style/RescueStandardError
+    rescue => e
+      # rubocop:enable Style/RescueStandardError
+      log.error("Standard error while running settings for key: #{@key}")
+      log.error(e.message)
+      raise
     end
 
     def context
@@ -127,21 +127,11 @@ module KDoc
       decorators.each { |decorator| decorator.decorate(self, :settings) }
     end
 
-    def initialize_attributes(data, key = nil, **options)
-      @data = data
-      @key = (key || FakeOpinion.new.default_settings_key).to_s
+    def build_decorators(opts)
+      decorator_list = opts[:decorators].nil? ? [] : opts[:decorators]
 
-      @parent = options[:parent] if options.key?(:parent)
-
-      decorator_list = options[:decorators].nil? ? [] : options[:decorators]
-
-      # This code needs to work differently, it needs to support the 3 different types
-      # Move the query into helpers
-      @decorators = decorator_list
-                    .map(&:new)
+      decorator_list.map(&:new)
                     .select { |decorator| decorator.compatible?(self) }
-
-      @data[@key] = {}
     end
   end
 end

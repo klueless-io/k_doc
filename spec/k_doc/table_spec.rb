@@ -2,76 +2,71 @@
 
 require 'spec_helper'
 
+class TableParent
+  attr_reader :some_attribute
+end
+
 RSpec.describe KDoc::Table do
+  let(:parent) { TableParent.new }
   let(:data) { {} }
-  let(:instance) { described_class.new(data) }
+  let(:instance) { described_class.new(parent, data) }
 
-  describe '.name' do
-    context 'when no name' do
-      subject { described_class.new(data).name }
+  describe '.key' do
+    subject { instance.key }
 
+    context 'when no key' do
       it { expect(subject).to eq('table') }
     end
 
-    context 'when name supplied' do
-      subject { described_class.new(data, 'my-name').name }
+    context 'when key supplied' do
+      let(:instance) { described_class.new(parent, data, 'my-key') }
 
-      it { expect(subject).to eq('my-name') }
+      it { expect(subject).to eq('my-key') }
     end
   end
 
   describe '.parent' do
-    subject { described_class.new(data, parent: parent).parent }
+    subject { instance.parent }
 
-    context 'when not attached to parent' do
-      let(:parent) { nil }
+    it { is_expected.not_to be_nil }
+  end
 
-      it 'parent is nil' do
-        expect(subject).to be_nil
-      end
+  context 'table grouping keys' do
+    subject { data }
+
+    context 'when key is nil' do
+      before { described_class.new(parent, data) }
+
+      it { is_expected.to eq({ 'table' => { 'fields' => [], 'rows' => [] } }) }
     end
 
-    # context 'when parent supplied' do
-    #   subject { described_class.new(data, parent: parent).parent }
+    context 'when key is :key_values' do
+      before { described_class.new(parent, data, :key_values) }
 
-    #   context 'when attached to a parent object' do
-    #     let(:parent) { KDoc::Document.new(:x) }
+      it { is_expected.to eq({ 'key_values' => { 'fields' => [], 'rows' => [] } }) }
+    end
 
-    #     it { expect(subject).not_to be_nil }
-    #     it { expect(subject.key).to eq(:x) }
-    #     it { expect(subject.type).to eq(:entity) }
-    #   end
+    context 'and key is "key_values"' do
+      before { described_class.new(parent, data, 'key_values') }
 
-    #   context 'when accessing dynamic method on parent' do
-    #     subject { document }
-    #     let(:document) do
-    #       KDoc::Document.new do
-    #         def its
-    #           'crazy'
-    #         end
+      it { is_expected.to eq({ 'key_values' => { 'fields' => [], 'rows' => [] } }) }
+    end
 
-    #         table do
-    #           fields %i[name]
-    #           row its
-    #           row type
-    #         end
-    #       end
-    #     end
+    context 'tables for people, places and tables (default)' do
+      before do
+        described_class.new(parent, data, :people)
+        described_class.new(parent, data)
+        described_class.new(parent, data, :places)
+      end
 
-    #     before { subject.execute_block }
-
-    #     it do
-    #       expect(subject.data).to eq(
-    #         'table' => {
-    #           'fields' => [
-    #             { 'name' => 'name', 'type' => 'string', 'default' => nil },
-    #           ],
-    #           'rows' => [{'name'=>'crazy'}, {'name'=>'entity'}]
-    #         }
-    #       )
-    #     end
-    #   end
-    # end
+      it do
+        is_expected.to eq(
+          'people' => { 'fields' => [], 'rows' => [] },
+          'table' => { 'fields' => [], 'rows' => [] },
+          'places' => { 'fields' => [], 'rows' => [] }
+        )
+      end
+    end
   end
 
   describe '#field' do
@@ -171,383 +166,348 @@ RSpec.describe KDoc::Table do
     end
   end
 
-  describe '#get_fields' do
-    subject do
-      described_class.new(data, :rows) do
+  context 'before block_eval' do
+    before do
+      described_class.new(parent, data) do
         fields :name, :type
+
+        rows :xmen, :mutants
+        rows :superman, :superhero
+        rows :wolverine, :mutant
       end
     end
 
-    it 'get fields' do
-      expect(subject.get_fields).to eq(
-        [
-          { 'name' => 'name', 'type' => 'string', 'default' => nil },
-          { 'name' => 'type', 'type' => 'string', 'default' => nil }
-        ]
-      )
-    end
-  end
+    describe '.data' do
+      subject { data }
 
-  describe '#fields (configuration)' do
-    it 'minimal configuration' do
-      described_class.new(data)
-
-      expect(data).to eq(
-        KDoc.opinion.default_table_key.to_s => {
-          'fields' => [],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'simple fields' do
-      described_class.new(data, :items) do
-        fields :column1, :column2
-      end
-
-      expect(data).to eq(
-        'items' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom default value for column2' do
-      described_class.new(data, :rows) do
-        fields :column1, field(:column2, 'CUSTOM DEFAULT')
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'string', 'default' => 'CUSTOM DEFAULT' }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom default boolean FALSE' do
-      described_class.new(data, :rows) do
-        fields field(:column1, false), field(:column2, default: false)
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => false },
-            { 'name' => 'column2', 'type' => 'string', 'default' => false }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom default boolean TRUE' do
-      described_class.new(data, :rows) do
-        fields field(:column1, true), field(:column2, default: true)
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => true },
-            { 'name' => 'column2', 'type' => 'string', 'default' => true }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom type & default value in column2' do
-      described_class.new(data, :rows) do
-        fields :column1, field(:column2, 333, :integer)
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'integer', 'default' => 333 }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom type & default value in column2 using the (f) alias' do
-      described_class.new(data, :rows) do
-        fields :column1, f(:column2, 3.33, type: :float)
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'float', 'default' => 3.33 }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'fields with custom type & default value in column2 using named parameters' do
-      described_class.new(data, :rows) do
-        fields :column1, f(:column2, default: 'CUSTOM VALUE', type: 'customtype')
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'customtype', 'default' => 'CUSTOM VALUE' }
-          ],
-          'rows' => []
-        }
-      )
-    end
-
-    it 'mixed fields' do
-      described_class.new(data, :rows) do
-        fields :name, f(:type, 'String'), f(:title, ''), f(:default, nil), f(:required, true, :bool), :reference_type, :db_type, :format_type, :description
-      end
-
-      expect(data).to eq(
-        'rows' => {
-          'fields' => [
-            { 'name' => 'name', 'type' => 'string', 'default' => nil },
-            { 'name' => 'type', 'type' => 'string', 'default' => 'String' },
-            { 'name' => 'title', 'type' => 'string', 'default' => '' },
-            { 'name' => 'default', 'type' => 'string', 'default' => nil },
-            { 'name' => 'required', 'type' => 'bool', 'default' => true },
-            { 'name' => 'reference_type', 'type' => 'string', 'default' => nil },
-            { 'name' => 'db_type', 'type' => 'string', 'default' => nil },
-            { 'name' => 'format_type', 'type' => 'string', 'default' => nil },
-            { 'name' => 'description', 'type' => 'string', 'default' => nil }
-          ],
-          'rows' => []
-        }
-      )
-    end
-  end
-
-  describe '#table (configuration)' do
-    context 'row groupings' do
-      it 'name defaults to :table' do
-        described_class.new(data)
-
-        expect(data).to eq('table' => { 'fields' => [], 'rows' => [] })
-      end
-
-      it 'name :people' do
-        described_class.new(data, :people)
-
-        expect(data).to eq('people' => { 'fields' => [], 'rows' => [] })
-      end
-
-      it 'name :people and places and rows' do
-        described_class.new(data, :people)
-        described_class.new(data)
-        described_class.new(data, :places)
-
-        expect(data).to eq(
-          'people' => { 'fields' => [], 'rows' => [] },
-          'table' => { 'fields' => [], 'rows' => [] },
-          'places' => { 'fields' => [], 'rows' => [] }
+      it do
+        is_expected.to eq(
+          KDoc.opinion.default_table_key.to_s => {
+            'fields' => [],
+            'rows' => []
+          }
         )
       end
     end
   end
 
-  describe 'table (configuration)' do
-    context 'using positional arguments' do
-      it 'with 2 rows, 2 columns and nil data' do
-        described_class.new(data) do
-          fields :column1, :column2
+  context 'after block_eval' do
+    before { instance.fire_eval }
 
-          row
-          row
-        end
+    describe '#get_fields' do
+      subject { instance.get_fields }
 
-        expect(data).to eq(
-          'table' => {
-            'fields' => [
-              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-              { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-            ],
-            'rows' => [
-              { 'column1' => nil, 'column2' => nil },
-              { 'column1' => nil, 'column2' => nil }
-            ]
-          }
-        )
-      end
-
-      it 'with 2 rows, 2 columns and data' do
-        described_class.new(data) do
-          fields :column1, :column2
-
-          row   'row1-c1', 'row1-c2'
-          row   'row2-c1', 'row2-c2'
-        end
-
-        expect(data).to eq(
-          'table' => {
-            'fields' => [
-              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-              { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-            ],
-            'rows' => [
-              { 'column1' => 'row1-c1', 'column2' => 'row1-c2' },
-              { 'column1' => 'row2-c1', 'column2' => 'row2-c2' }
-            ]
-          }
-        )
-      end
-
-      it 'with 2 rows, 2 columns using mixed nil mixed data' do
-        described_class.new(data) do
-          fields :column1, :column2
-
-          row   nil, 'row1-c2'
-          row   'row2-c1'
-        end
-
-        expect(data).to eq(
-          'table' => {
-            'fields' => [
-              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-              { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-            ],
-            'rows' => [
-              { 'column1' => nil, 'column2' => 'row1-c2' },
-              { 'column1' => 'row2-c1', 'column2' => nil }
-            ]
-          }
-        )
-      end
-
-      it 'with 2 rows, 3 columns using mixed default types' do
-        described_class.new(data) do
-          fields :column1, :column2, f(:column3, false)
-
-          row   nil, 'row1-c2', true
-          row   'row2-c1'
-        end
-
-        expect(data).to eq(
-          'table' => {
-            'fields' => [
-              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-              { 'name' => 'column2', 'type' => 'string', 'default' => nil },
-              { 'name' => 'column3', 'type' => 'string', 'default' => false }
-            ],
-            'rows' => [
-              { 'column1' => nil, 'column2' => 'row1-c2', 'column3' => true },
-              { 'column1' => 'row2-c1', 'column2' => nil, 'column3' => false }
-            ]
-          }
-        )
-      end
-
-      it 'when row.columns > fields.columns' do
-        expect do
-          described_class.new(data) do
-            fields :column1
-            row 'row1-c1', 'row1-c2'
+      context 'when basic field definitions' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :name, :type
           end
-        end.to raise_error(KType::Error, 'To many values for row, argument 2')
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'name', 'type' => 'string', 'default' => nil },
+              { 'name' => 'type', 'type' => 'string', 'default' => nil }
+            ]
+          )
+        end
+      end
+
+      context 'when field definition has default value' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :column1, field(:column2, 'CUSTOM DEFAULT')
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
+              { 'name' => 'column2', 'type' => 'string', 'default' => 'CUSTOM DEFAULT' }
+            ]
+          )
+        end
+      end
+
+      context 'when field definition has default boolean FALSE' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields field(:column1, false), field(:column2, default: false)
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => false },
+              { 'name' => 'column2', 'type' => 'string', 'default' => false }
+            ]
+          )
+        end
+      end
+
+      context 'when field definition has default boolean TRUE' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields field(:column1, true), field(:column2, default: true)
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => true },
+              { 'name' => 'column2', 'type' => 'string', 'default' => true }
+            ]
+          )
+        end
+      end
+
+      context 'when field has custom :integer type and default value' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :column1, field(:column2, 333, :integer)
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
+              { 'name' => 'column2', 'type' => 'integer', 'default' => 333 }
+            ]
+          )
+        end
+      end
+
+      context 'when field has custom :float type and default value' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :column1, f(:column2, 3.33, type: :float)
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
+              { 'name' => 'column2', 'type' => 'float', 'default' => 3.33 }
+            ]
+          )
+        end
+      end
+
+      context 'when fields have custom type & default value using named parameters' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :column1, f(:column2, default: 'CUSTOM VALUE', type: 'customtype')
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'column1', 'type' => 'string', 'default' => nil },
+              { 'name' => 'column2', 'type' => 'customtype', 'default' => 'CUSTOM VALUE' }
+            ]
+          )
+        end
+      end
+
+      context 'when mixed set of examples' do
+        let(:instance) do
+          described_class.new(parent, data) do
+            fields :name, f(:type, 'String'), f(:title, ''), f(:default, nil), f(:required, true, :bool), :reference_type, :db_type, :format_type, :description
+          end
+        end
+
+        it do
+          is_expected.to eq(
+            [
+              { 'name' => 'name', 'type' => 'string', 'default' => nil },
+              { 'name' => 'type', 'type' => 'string', 'default' => 'String' },
+              { 'name' => 'title', 'type' => 'string', 'default' => '' },
+              { 'name' => 'default', 'type' => 'string', 'default' => nil },
+              { 'name' => 'required', 'type' => 'bool', 'default' => true },
+              { 'name' => 'reference_type', 'type' => 'string', 'default' => nil },
+              { 'name' => 'db_type', 'type' => 'string', 'default' => nil },
+              { 'name' => 'format_type', 'type' => 'string', 'default' => nil },
+              { 'name' => 'description', 'type' => 'string', 'default' => nil }
+            ]
+          )
+        end
+      end
+    end
+
+    describe '#get_rows' do
+      subject { instance.get_rows }
+
+      context 'using positional arguments' do
+        context 'with 2 rows, 2 columns and nil data' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2
+
+              row
+              row
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => nil, 'column2' => nil },
+                { 'column1' => nil, 'column2' => nil }
+              ]
+            )
+          end
+        end
+
+        context 'with 2 rows, 2 columns and data' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2
+
+              row   'row1-c1', 'row1-c2'
+              row   'row2-c1', 'row2-c2'
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => 'row1-c1', 'column2' => 'row1-c2' },
+                { 'column1' => 'row2-c1', 'column2' => 'row2-c2' }
+              ]
+            )
+          end
+        end
+
+        context 'with 2 rows, 2 columns using mixed nil mixed data' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2
+
+              row   nil, 'row1-c2'
+              row   'row2-c1'
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => nil, 'column2' => 'row1-c2' },
+                { 'column1' => 'row2-c1', 'column2' => nil }
+              ]
+            )
+          end
+        end
+
+        context 'with 2 rows, 3 columns using mixed default types' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2, f(:column3, false)
+
+              row   nil, 'row1-c2', true
+              row   'row2-c1'
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => nil, 'column2' => 'row1-c2', 'column3' => true },
+                { 'column1' => 'row2-c1', 'column2' => nil, 'column3' => false }
+              ]
+            )
+          end
+        end
+      end
+
+      context 'using named arguments' do
+        context 'with 2 rows, 2 columns using named values' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2
+
+              row column1: 'david'
+              row column2: 'cruwys'
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => 'david', 'column2' => nil },
+                { 'column1' => nil, 'column2' => 'cruwys' }
+              ]
+            )
+          end
+        end
+      end
+
+      context 'using positional and named arguments' do
+        context 'add 2 rows, 2 columns with named values' do
+          let(:instance) do
+            described_class.new(parent, data) do
+              fields :column1, :column2
+
+              row 'david'
+              row column2: 'cruwys'
+            end
+          end
+
+          it do
+            is_expected.to eq(
+              [
+                { 'column1' => 'david', 'column2' => nil },
+                { 'column1' => nil, 'column2' => 'cruwys' }
+              ]
+            )
+          end
+        end
       end
     end
   end
 
-  context 'using named arguments' do
-    it 'with 2 rows, 2 columns using named values' do
-      described_class.new(data) do
-        fields :column1, :column2
-
-        row column1: 'david'
-        row column2: 'cruwys'
+  context 'error handling' do
+    context 'when row.columns > fields.columns' do
+      let(:instance) do
+        described_class.new(parent, data) do
+          fields :column1
+          row 'row1-c1', 'row1-c2'
+        end
       end
 
-      # puts JSON.pretty_generate(data)
-
-      expect(data).to eq(
-        'table' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-          ],
-          'rows' => [
-            { 'column1' => 'david', 'column2' => nil },
-            { 'column1' => nil, 'column2' => 'cruwys' }
-          ]
-        }
-      )
+      it { expect { instance.fire_eval }.to raise_error(KType::Error, 'To many values for row, argument 2') }
     end
   end
 
-  context 'using positional and named arguments' do
-    it 'add 2 rows, 2 columns with named values' do
-      described_class.new(data) do
-        fields :column1, :column2
+  describe '#find_row' do
+    before { instance.fire_eval }
 
-        row 'david'
-        row column2: 'cruwys'
-      end
-
-      expect(data).to eq(
-        'table' => {
-          'fields' => [
-            { 'name' => 'column1', 'type' => 'string', 'default' => nil },
-            { 'name' => 'column2', 'type' => 'string', 'default' => nil }
-          ],
-          'rows' => [
-            { 'column1' => 'david', 'column2' => nil },
-            { 'column1' => nil, 'column2' => 'cruwys' }
-          ]
-        }
-      )
-    end
-  end
-
-  describe 'get rows' do
-    subject do
-      described_class.new(data) do
+    let(:instance) do
+      described_class.new(parent, data) do
         fields :column1, :column2
 
         row 1
-        row 2
-        row 3
+        row 2, :a
+        row 3, :b
       end
     end
 
-    it 'get all rows' do
-      expect(subject.get_rows).to eq(
-        [
-          { 'column1' => 1, 'column2' => nil },
-          { 'column1' => 2, 'column2' => nil },
-          { 'column1' => 3, 'column2' => nil }
-        ]
-      )
+    context 'when row is found - example 1' do
+      subject { instance.find_row('column1', 2) }
+
+      it { is_expected.to eq({ 'column1' => 2, 'column2' => :a }) }
     end
 
-    it 'get rows by search' do
-      expect(subject.get_rows.select { |r| [1, 3].include?(r['column1']) }).to eq(
-        [
-          { 'column1' => 1, 'column2' => nil },
-          { 'column1' => 3, 'column2' => nil }
-        ]
-      )
-    end
+    context 'when row is found - example 2' do
+      subject { instance.find_row('column2', :b) }
 
-    it 'find row by key/value' do
-      expect(subject.find_row('column1', 2)).to eq({ 'column1' => 2, 'column2' => nil })
+      it { is_expected.to eq({ 'column1' => 3, 'column2' => :b }) }
     end
   end
 end

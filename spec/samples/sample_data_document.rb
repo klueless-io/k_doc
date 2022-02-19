@@ -1,5 +1,4 @@
-KDoc.model :sample_data do
-
+SAMPLE_DOC = KDoc.model :sample_data do
   table :users do
     fields :user_name, :user, :email
 

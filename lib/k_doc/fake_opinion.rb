@@ -28,10 +28,6 @@ module KDoc
       @default_yaml_type = :yaml
       @default_settings_key = :settings
       @default_table_key = :table
-
-      # @document_class = KDoc::Document
-      @table_class = KDoc::Table
-      @settings_class = KDoc::Settings
     end
   end
 end

@@ -6,18 +6,34 @@ module KDoc
     include KLog::Logging
 
     attr_reader :parent
-    attr_reader :name
+    attr_reader :key # used to be called name
     attr_reader :decorators
+    attr_reader :block
 
-    def initialize(data, name = nil, **options, &block)
-      initialize_attributes(data, name, **options)
+    def initialize(parent, data, key = nil, **opts, &block)
+      @parent = parent
+      @data = data
+      @key = (key || FakeOpinion.new.default_table_key).to_s
+      @data[@key] = { 'fields' => [], 'rows' => [] }
+      @decorators = build_decorators(opts)
+      @block = block
+    end
+
+    def fire_eval
+      return unless block
+
+      instance_eval(&block)
 
       @has_executed_field_decorators = false
       @has_executed_row_decorators = false
 
-      instance_eval(&block) if block_given?
-
       run_decorators(:update_rows)
+
+      # rubocop:disable Style/RescueStandardError
+    rescue => e
+      # rubocop:enable Style/RescueStandardError
+      log.error("Table error for key: #{@key} - #{e.message}")
+      raise
     end
 
     def context
@@ -31,7 +47,7 @@ module KDoc
     def fields(*field_definitions)
       field_definitions = *field_definitions[0] if field_definitions.length == 1 && field_definitions[0].is_a?(Array)
 
-      fields = @data[@name]['fields']
+      fields = @data[@key]['fields']
 
       field_definitions.each do |fd|
         fields << if fd.is_a?(String) || fd.is_a?(Symbol)
@@ -46,7 +62,7 @@ module KDoc
 
     # rubocop:disable Metrics/AbcSize
     def row(*args, **named_args)
-      fields = @data[@name]['fields']
+      fields = @data[@key]['fields']
 
       raise KType::Error, "To many values for row, argument #{args.length}" if args.length > fields.length
 
@@ -63,31 +79,31 @@ module KDoc
       end
 
       # Override with named args
-      named_args.each_key do |key|
-        row[key.to_s] = named_args[key] # KUtil.data.clean_symbol(named_args[key])
+      named_args.each_key do |arg_name|
+        row[arg_name.to_s] = named_args[arg_name] # KUtil.data.clean_symbol(named_args[key])
       end
 
-      @data[@name]['rows'] << row
+      @data[@key]['rows'] << row
       row
     end
     # rubocop:enable Metrics/AbcSize
 
     # rubocop:disable Naming/AccessorMethodName
     def get_fields
-      @data[@name]['fields']
+      @data[@key]['fields']
     end
 
     def get_rows
-      @data[@name]['rows']
+      @data[@key]['rows']
     end
     # rubocop:enable Naming/AccessorMethodName
 
     def internal_data
-      @data[@name]
+      @data[@key]
     end
 
     def find_row(key, value)
-      @data[@name]['rows'].find { |r| r[key] == value }
+      @data[@key]['rows'].find { |r| r[key] == value }
     end
 
     # Field definition
@@ -138,24 +154,12 @@ module KDoc
     end
     # rubocop:enable Metrics/CyclomaticComplexity
 
-    # rubocop:disable Metrics/AbcSize
-    def initialize_attributes(data, name = nil, **options)
-      @data = data
-      @name = (name || FakeOpinion.new.default_table_key.to_s).to_s
+    def build_decorators(opts)
+      decorator_list = opts[:decorators].nil? ? [] : opts[:decorators]
 
-      @parent = options[:parent] if !options.nil? && options.key?(:parent)
-
-      # This code needs to work differently, it needs to support the 3 different types
-      # Move the query into helpers
-      decorator_list = options[:decorators].nil? ? [] : options[:decorators]
-
-      @decorators = decorator_list
-                    .map(&:new)
+      decorator_list.map(&:new)
                     .select { |decorator| decorator.compatible?(self) }
-
-      @data[@name] = { 'fields' => [], 'rows' => [] }
     end
-    # rubocop:enable Metrics/AbcSize
 
     def respond_to_missing?(name, *_args, &_block)
       (!@parent.nil? && @parent.respond_to?(name, true)) || super
