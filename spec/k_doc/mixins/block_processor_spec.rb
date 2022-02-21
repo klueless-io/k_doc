@@ -37,10 +37,12 @@ end
 class TestBlock
   include KDoc::BlockProcessor
 
+  attr_reader :tag
   attr_reader :context
   attr_reader :some_attribute
 
   def initialize(**opts, &block)
+    @tag = opts[:tag]
     @context = OpenStruct.new
     @some_attribute = :the_initial_value_of_some_attribute
     initialize_block_processor(opts, &block)
@@ -459,6 +461,92 @@ RSpec.describe KDoc::BlockProcessor do
           subject { instance.context.some_data }
 
           it { is_expected.to eq(:set_during_init) }
+        end
+      end
+
+      describe '#depend_on' do
+        describe '.depend_on_tags' do
+          subject { instance.depend_on_tags }
+
+          context 'when depend_on a key' do
+            before { instance.depend_on(:some_dependency) }
+
+            it { is_expected.to eq(%i[some_dependency]) }
+          end
+
+          context 'when depend_on multiple keys' do
+            before { instance.depend_on(:some_dependency, :another_dependency) }
+
+            it { is_expected.to eq(%i[some_dependency another_dependency]) }
+          end
+
+          context 'when depend_on key x 2' do
+            before do
+              instance.depend_on(:some_dependency)
+              instance.depend_on(:another_dependency)
+            end
+
+            it { is_expected.to eq(%i[some_dependency another_dependency]) }
+          end
+        end
+      end
+    end
+
+    context 'when documents depend_on other documents' do
+      let(:document1) do
+        described_class.new(tag: :tag1)
+      end
+
+      let(:document2) do
+        described_class.new(tag: :tag2) do
+          depend_on(:tag1)
+        end
+      end
+
+      describe '.dependencies_met?' do
+        before do
+          document1.fire_eval
+          document2.fire_eval
+        end
+        context 'for document 1' do
+          subject { document1.dependencies_met? }
+
+          it { is_expected.to be_truthy }
+        end
+
+        context 'for document 2' do
+          subject { document2.dependencies_met? }
+
+          it { is_expected.to be_falsey }
+        end
+
+        context 'when executing documents with dependencies' do
+          before { instance.execute_block }
+
+          describe '.block_state' do
+            subject { instance.block_state }
+
+            context 'when document has no dependencies' do
+              let(:instance) { document1 }
+
+              it { is_expected.to eq(:children_evaluated) }
+            end
+
+            context 'when document has unmet dependencies' do
+              let(:instance) { document2 }
+
+              it { is_expected.to eq(:evaluated) }
+
+              context 'when dependency is resolved' do
+                before do
+                  document2.resolve_dependency(document1)
+                  instance.execute_block
+                end
+
+                it { is_expected.to eq(:children_evaluated) }
+              end
+            end
+          end
         end
       end
     end
