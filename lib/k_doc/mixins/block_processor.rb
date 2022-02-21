@@ -26,6 +26,9 @@ module KDoc
     attr_reader :action_block
     attr_reader :children
 
+    attr_reader :depend_on_tags
+    attr_reader :dependents
+
     def initialize_block_processor(_opts, &block)
       @block = block if block_given?
       @block_state = :new
@@ -33,11 +36,30 @@ module KDoc
       @init_block = nil
       @action_block = nil
       @children = []
+
+      @depend_on_tags = []
+      @dependents = {}
+    end
+
+    def depend_on(*document_tags)
+      document_tags.each do |document_tag|
+        @depend_on_tags << document_tag
+      end
+    end
+
+    def resolve_dependency(document)
+      @dependents[document.tag] = document
+    end
+
+    def dependencies_met?
+      depend_on_tags.all? { |tag| dependents[tag] }
     end
 
     def execute_block(run_actions: false)
       # Evaluate the main block of code
       fire_eval # aka primary eval
+
+      return unless dependencies_met?
 
       # Call the block of code attached to the init method
       fire_init
