@@ -1,0 +1,58 @@
+<mxfile host="Qgh">
+  <diagram id="25G" name="Style-Plain">
+    <mxGraphModel dx="0" dy="0" background="#fafafa" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="page_root_25G" parent="25G"/>
+        <mxCell id="node_root_25G" parent="page_root_25G"/>
+        <mxCell id="25G-2" value="Container" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="30" y="30" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-3" value="CSV Doc" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="250" y="30" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-4" value="JSON Doc" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="470" y="30" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-5" value="YAML Doc" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="690" y="30" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-6" value="Model" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="30" y="250" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-7" value="Settings" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="250" y="250" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-8" value="Table" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="470" y="250" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-9" value="Mixins" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="690" y="250" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-10" value="Block Processor" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="30" y="470" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-11" value="Composable Components" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="250" y="470" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-12" value="Datum" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="470" y="470" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-13" value="Guarded" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="690" y="470" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-14" value="Taggable" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="30" y="690" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-15" value="Decorators" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="250" y="690" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-16" value="Settings Decorator" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="470" y="690" width="160" height="160" as="geometry"/>
+        </mxCell>
+        <mxCell id="25G-17" value="Table Decorator" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontColor=#333333;swimlane" vertex="1" parent="node_root_25G">
+          <mxGeometry x="690" y="690" width="160" height="160" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -26,6 +26,7 @@ module KDoc
     attr_reader :action_block
     attr_reader :children
 
+    # TODO: Can dependencies be extracted to their own module?
     attr_reader :depend_on_tags
     attr_reader :dependents
 
@@ -39,6 +40,7 @@ module KDoc
 
       @depend_on_tags = []
       @dependents = {}
+      @block_executed = false
     end
 
     def depend_on(*document_tags)
@@ -51,11 +53,35 @@ module KDoc
       @dependents[document.tag] = document
     end
 
+    def import(tag)
+      @dependents[tag]
+    end
+
+    def import_data(tag, as: :document)
+      doc = import(tag)
+
+      return nil unless doc&.data
+
+      # log.error 'about to import'
+      doc.debug(include_header: true)
+
+      return KUtil.data.to_open_struct(doc.data) if %i[open_struct ostruct].include?(as)
+
+      doc.data
+    end
+
     def dependencies_met?
       depend_on_tags.all? { |tag| dependents[tag] }
     end
 
     def execute_block(run_actions: false)
+      block_execute
+      fire_action if run_actions
+    end
+
+    def block_execute
+      return if @block_executed
+
       # Evaluate the main block of code
       fire_eval # aka primary eval
 
@@ -67,8 +93,7 @@ module KDoc
       # Call the each block in the child array of blocks in the order of creation (FIFO)
       fire_children
 
-      # Call the block of code attached to the action method
-      fire_action if run_actions
+      @block_executed = true
     end
 
     # The underlying container is created and in the case of k_manager, registered

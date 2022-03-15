@@ -28,7 +28,8 @@ gem install k_doc
 
 As a Developer, I need flexible data structures defined in DSL, so can model rich documents
 
-See all [stories](./STORIES.md)
+See [project plan](./docs/project-plan.md)
+
 
 ## Usage
 

@@ -1,0 +1,29 @@
+<mxfile host="KVw">
+  <diagram id="CJG" name="In progress">
+    <mxGraphModel dx="0" dy="0" background="#FFFACD" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="page_root_CJG" parent="CJG"/>
+        <mxCell id="node_root_CJG" parent="page_root_CJG"/>
+        <mxCell id="CJG-2" value="create a domain model" style="whiteSpace=wrap;html=1;rounded=1;glass=1;fillColor=#d5e8d4;strokeColor=#82b366;fontColor=#333333" vertex="1" parent="node_root_CJG">
+          <mxGeometry x="10" y="10" width="300" height="60" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="O1V" name="To Do">
+    <mxGraphModel dx="0" dy="0" background="#FFFACD" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="page_root_O1V" parent="O1V"/>
+        <mxCell id="node_root_O1V" parent="page_root_O1V"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="EnY" name="Done">
+    <mxGraphModel dx="0" dy="0" background="#FFFACD" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="page_root_EnY" parent="EnY"/>
+        <mxCell id="node_root_EnY" parent="page_root_EnY"/>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
