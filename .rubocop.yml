@@ -62,6 +62,10 @@ Metrics/ClassLength:
 Metrics/ModuleLength:
   Exclude:
     - "**/spec/**/*"
+    - "lib/k_doc/mixins/block_processor.rb"
+Naming/MethodParameterName:
+  AllowedNames:
+    - as
 Naming/MemoizedInstanceVariableName:
   Enabled: false
 Naming/VariableNumber:
