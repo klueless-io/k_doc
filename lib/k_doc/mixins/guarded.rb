@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module KDoc
-  # Guarded provides parameter waring and guarding
+  # Guarded provides parameter warning and guarding
   #
   # TODO: this could be moved into KType or KGuard
   module Guarded

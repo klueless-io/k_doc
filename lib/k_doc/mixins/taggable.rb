@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module KDoc
+  # Provide tagging functionality to the underlying model
+  #
   # A container acts a base data object for any data that requires tagging
   # such as unique key, type and namespace.
   module Taggable
