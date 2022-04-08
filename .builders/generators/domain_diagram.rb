@@ -1,25 +1,3 @@
-      #   interface(theme: :style_02) do
-      #     format
-      #       .header('IPerson')
-      #       .field(:field1, type: :string)
-      #       .field(:field2, type: :string)
-      #       .method(:full_name, type: :string)
-      #   end
-
-      #   klass do
-      #     format(:class)
-      #       .header('Person')
-      #       .field(:field1, type: :string)
-      #       .field(:field2, type: :string)
-      #       .field(:age, type: :integer)
-      #       .field(:birthday, type: :date)
-      #       .method(:full_name, type: :string)
-      #   end
-      # end
-      # .cd(:spec)
-      # .save('.samples/30-html-shapes.drawio')
-      # .cd(:docs)
-      # .export_svg('samples/html-shapes', page: 1)
 KManager.action :domain_diagram do
   action do
 
@@ -204,6 +182,9 @@ KManager.action :domain_diagram do
       .save('domain.drawio')
       .export_svg('domain_model', page: 1)
 
+    # TODO: move to project-plan
+    # .save('./domain/domain.drawio')
+    # .export_svg('./domain/domain_model', page: 1)
   end
 end
 

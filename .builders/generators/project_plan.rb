@@ -33,5 +33,10 @@ KManager.action :project_plan do
       .export_svg('project_in_progress', page: 1)
       .export_svg('project_todo'       , page: 2)
       .export_svg('project_done'       , page: 3)
+
+    # TODO: move to ./project-plan
+      # .save('project-plan/project.drawio')
+      # .export_svg('project-plan/project_in_progress', page: 1)
+
   end
 end
