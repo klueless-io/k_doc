@@ -2,6 +2,7 @@
 
 module KDoc
   # Builds up key/value settings from the block
+  #
   class Settings
     include KLog::Logging
 
