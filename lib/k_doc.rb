@@ -84,7 +84,7 @@ module KDoc
   KDoc.opinion = KDoc::FakeOpinion.new
 end
 
-if ENV['KLUE_DEBUG']&.to_s&.downcase == 'true'
+if ENV.fetch('KLUE_DEBUG', 'false').downcase == 'true'
   namespace = 'KDoc::Version'
   file_path = $LOADED_FEATURES.find { |f| f.include?('k_doc/version') }
   version   = KDoc::VERSION.ljust(9)
